@@ -310,6 +310,32 @@ $data = <span style="color:#82aaff">json_decode</span>(<span style="color:#82aaf
           <button type="submit" class="btn btn-primary" style="padding:11px 26px">Daftar</button>
         </div>
       </form>
+
+      <!-- Hasil: kartu API key dengan tombol salin -->
+      <div id="reg-card" hidden style="margin-top:18px;background:rgba(34,211,154,.07);border:1px solid rgba(34,211,154,.32);border-radius:var(--radius-sm);padding:22px;text-align:center">
+        <div style="font-size:26px;margin-bottom:6px">🎉</div>
+        <h4 style="font-size:16px;font-weight:700;margin-bottom:4px">API Key kamu siap!</h4>
+        <p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Simpan baik-baik. Key ini nggak bisa dilihat lagi dari mana pun.</p>
+
+        <div class="basebox" style="max-width:none;margin:0 0 14px;background:rgba(0,0,0,.3)">
+          <code id="reg-key" style="color:var(--ok);font-weight:700;font-size:16px;letter-spacing:.5px">—</code>
+          <button type="button" class="btn btn-primary copy" id="reg-copy">📋 Salin</button>
+        </div>
+
+        <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+          <span class="badge free" style="background:rgba(34,211,154,.14);border:1px solid rgba(34,211,154,.3);color:var(--ok);padding:5px 12px;border-radius:7px;font-size:12.5px;font-weight:700">Kuota: 25 req/hari</span>
+          <a href="/docs" class="btn btn-ghost" style="padding:8px 17px;font-size:13.5px">📖 Lihat Dokumentasi</a>
+        </div>
+
+        <details style="margin-top:18px;text-align:left">
+          <summary style="font-size:13.5px;color:var(--muted);font-weight:600">Cara pakai key ini</summary>
+          <div class="code" style="margin-top:12px">
+            <div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+            <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ytmp3?url=https://youtu.be/VIDEO_ID&amp;apikey=KEY_KAMU"</pre>
+          </div>
+        </details>
+      </div>
+
       <div class="out" id="reg-out">API key kamu akan muncul di sini…</div>
     </div>
   </div>
