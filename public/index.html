@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HABI API — Downloader & Tools REST API</title>
+<meta name="description" content="REST API gratis untuk download YouTube, TikTok, Instagram, Facebook, plus tools: OCR, translate, TTS, screenshot, dan lainnya. Didukung API key & rate limit.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand">
+      <span class="brand-mark">H</span>
+      <span>HABI API</span>
+    </a>
+    <div class="nav-links">
+      <a href="#fitur">Fitur</a>
+      <a href="#endpoint">Endpoint</a>
+      <a href="#mulai">Mulai</a>
+      <a href="/docs">Dokumentasi</a>
+      <a href="/pricing">Harga</a>
+      <a href="#daftar" class="btn btn-primary">Get API Key</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="pill"><span class="dot"></span> Server online · 19 endpoint aktif</div>
+    <h1>REST API <span class="grad">Downloader & Tools</span><br>yang gampang dipakai</h1>
+    <p class="lead">
+      Satu API untuk download media dari YouTube, TikTok, Instagram, Facebook,
+      plus toolsaito:. OCR, translate, TTS, screenshot, dan web reader.
+      Daftar API key gratis, langsung pakai.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#daftar" class="btn btn-primary">🚀 Daftar API Key Gratis</a>
+      <a href="/docs" class="btn btn-ghost">📖 Baca Dokumentasi</a>
+    </div>
+
+    <div class="basebox">
+      <code>BASE_URL: <span data-cfg="baseUrl">—</span>/api</code>
+      <button class="btn btn-primary copy" data-copy="https://api.habi.my.id/api">Salin</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>19</b><span>Endpoint</span></div>
+      <div class="stat"><b>9</b><span>Platform</span></div>
+      <div class="stat"><b data-cfg="quota">25 req/hari</b><span>Kuota Gratis</span></div>
+      <div class="stat"><b>JSON</b><span>Format Balasan</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ FITUR ══════════ -->
+<section id="fitur">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Fitur</span>
+      <h2>Kenapa HABI API?</h2>
+      <p>Semua yang kamu butuhin buat ngebuild bot, website, atau automasi — dalam satu endpoint.</p>
+    </div>
+
+    <div class="grid g3">
+      <div class="card">
+        <div class="card-ico">⚡</div>
+        <h3>Cepat & Ringan</h3>
+        <p>Balasan JSON dalam hitungan detik. Streaming file langsung, tanpa buffering berat.</p>
+      </div>
+      <div class="card">
+        <div class="card-ico">🔑</div>
+        <h3>API Key Simpel</h3>
+        <p>Daftar sekali lewat <code style="font-family:var(--mono);font-size:12.5px;color:var(--brand-2)">/api/register</code>, langsung dapat key. Tidak ada dashboard yang ribet.</p>
+      </div>
+      <div class="card">
+        <div class="card-ico">📦</div>
+        <h3>Multi Platform</h3>
+        <p>YouTube, TikTok, Instagram, Facebook, X/Twitter, Threads, CapCut, Pinterest, Spotify.</p>
+      </div>
+      <div class="card">
+        <div class="card-ico">🧰</div>
+        <h3>Tools Lengkap</h3>
+        <p>OCR, translate, text-to-speech, screenshot, web reader, lirik, spesifikasi HP, remove background.</p>
+      </div>
+      <div class="card">
+        <div class="card-ico">📱</div>
+        <h3>Multi Format</h3>
+        <p>Ambil metadata, audio MP3, atau video MP4 — tinggal ganti parameter <code style="font-family:var(--mono);font-size:12.5px;color:var(--brand-2)">format</code>.</p>
+      </div>
+      <div class="card">
+        <div class="card-ico">🛡️</div>
+        <h3>Aman & Stabil</h3>
+        <p>Rate limit Fair Use, key terisolasi per pengguna, dan uptime dipantau terus.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ENDPOINT ══════════ -->
+<section id="endpoint">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Endpoint</span>
+      <h2>Daftar Endpoint</h2>
+      <p>Semua endpoint memakai method <code style="font-family:var(--mono);color:var(--brand-2)">GET</code> dan wajib menyertakan parameter <code style="font-family:var(--mono);color:var(--brand-2)">&amp;apikey=KEY</code>.</p>
+    </div>
+
+    <div style="font-size:14px;color:var(--muted);margin:0 0 16px;font-weight:650;letter-spacing:.02em">📥 Downloader</div>
+    <div class="grid g3" style="margin-bottom:34px">
+      <a href="/docs#ytmp3" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/ytmp3</span></div><div class="ep-desc">Download audio YouTube sebagai MP3</div></a>
+      <a href="/docs#ytmp4" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/ytmp4</span></div><div class="ep-desc">Download video YouTube sebagai MP4</div></a>
+      <a href="/docs#info" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/info</span></div><div class="ep-desc">Metadata video: judul, durasi, channel, views</div></a>
+      <a href="/docs#tiktok" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/tiktok</span></div><div class="ep-desc">Download video TikTok (HD)</div></a>
+      <a href="/docs#tiktok-audio" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/tiktok-audio</span></div><div class="ep-desc">Ekstrak audio TikTok</div></a>
+      <a href="/docs#facebook" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/facebook</span></div><div class="ep-desc">Download video Facebook</div></a>
+      <a href="/docs#instagram" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/instagram</span></div><div class="ep-desc">Download post & reels Instagram</div></a>
+      <a href="/docs#direct" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/direct</span></div><div class="ep-desc">Download URL apa pun (auto-deteksi)</div></a>
+      <a href="/docs#file" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/file</span></div><div class="ep-desc">Ambil file langsung dari URL</div></a>
+    </div>
+
+    <div style="font-size:14px;color:var(--muted);margin:0 0 16px;font-weight:650;letter-spacing:.02em">🧰 Tools</div>
+    <div class="grid g3">
+      <a href="/docs#ocr" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/ocr</span></div><div class="ep-desc">Baca teks dari gambar</div></a>
+      <a href="/docs#translate" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/translate</span></div><div class="ep-desc">Terjemahkan teks ke berbagai bahasa</div></a>
+      <a href="/docs#tts" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/tts</span></div><div class="ep-desc">Ubah teks jadi suara MP3</div></a>
+      <a href="/docs#ssweb" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/ssweb</span></div><div class="ep-desc">Screenshot website (PNG)</div></a>
+      <a href="/docs#webfetch" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/webfetch</span></div><div class="ep-desc">Ambil isi teks sebuah halaman web</div></a>
+      <a href="/docs#lirik" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/lirik</span></div><div class="ep-desc">Cari lirik lagu</div></a>
+      <a href="/docs#phonespecs" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/phonespecs</span></div><div class="ep-desc">Spesifikasi smartphone</div></a>
+      <a href="/docs#phonecompare" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/phonecompare</span></div><div class="ep-desc">Bandingkan 2 HP</div></a>
+      <a href="/docs#removebg" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/removebg</span></div><div class="ep-desc">Hapus background foto</div></a>
+      <a href="/docs#pdfcompress" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/pdfcompress</span></div><div class="ep-desc">Kompres ukuran file PDF</div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CONTOH KODE ══════════ -->
+<section id="contoh">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Contoh</span>
+      <h2>Mulai dalam 30 Detik</h2>
+      <p>Salin contoh di bawah, ganti <code style="font-family:var(--mono);color:var(--brand-2)">url</code> dan <code style="font-family:var(--mono);color:var(--brand-2)">apikey</code> dengan milikmu.</p>
+    </div>
+
+    <div class="code">
+      <div class="code-head">
+        <span class="tab on" data-lang="curl">cURL</span>
+        <span class="tab" data-lang="js">JavaScript</span>
+        <span class="tab" data-lang="py">Python</span>
+        <span class="tab" data-lang="php">PHP</span>
+        <div class="copy"><button data-copy="#">Salin</button></div>
+      </div>
+
+      <pre data-lang="curl"><span style="color:#6a7391"># Ambil API key gratis</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/register?note=nama-kamu"
+
+<span style="color:#6a7391"># Download audio YouTube</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ytmp3?url=https://youtube.com/watch?v=VIDEO_ID&amp;apikey=API_KEY"
+
+<span style="color:#6a7391"># Metadata video</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/info?url=https://youtu.be/VIDEO_ID&amp;apikey=API_KEY"</pre>
+
+      <pre data-lang="js" hidden><span style="color:#c792ea">const</span> url = <span style="color:#f78c6c">"https://youtu.be/VIDEO_ID"</span>;
+<span style="color:#c792ea">const</span> key = <span style="color:#f78c6c">"API_KEY"</span>;
+
+<span style="color:#c792ea">const</span> res = <span style="color:#c792ea">await</span> <span style="color:#82aaff">fetch</span>(<span style="color:#f78c6c">`https://api.habi.my.id/api/ytmp3?url=</span>${<span style="color:#82aaff">encodeURIComponent</span>(url)}&amp;apikey=${key}<span style="color:#f78c6c">`</span>);
+<span style="color:#c792ea">const</span> data = <span style="color:#c792ea">await</span> res.<span style="color:#82aaff">json</span>();
+
+<span style="color:#89ddff">if</span> (data.status) {
+  <span style="color:#89ddff">console</span>.<span style="color:#82aaff">log</span>(<span style="color:#f78c6c">"Judul:"</span>, data.title);
+  <span style="color:#89ddff">console</span>.<span style="color:#82aaff">log</span>(<span style="color:#f78c6c">"File:"</span>, data.url);
+} <span style="color:#c792ea">else</span> {
+  <span style="color:#89ddff">console</span>.<span style="color:#f78c6c">"Error:"</span>, data.error);
+}</pre>
+
+      <pre data-lang="py" hidden><span style="color:#c792ea">import</span> requests
+
+url = <span style="color:#f78c6c">"https://youtu.be/VIDEO_ID"</span>
+key = <span style="color:#f78c6c">"API_KEY"</span>
+
+r = requests.<span style="color:#82aaff">get</span>(<span style="color:#f78c6c">"https://api.habi.my.id/api/ytmp3"</span>, params={
+    <span style="color:#f78c6c">"url"</span>: url,
+    <span style="color:#f78c6c">"apikey"</span>: key,
+}).<span style="color:#82aaff">json</span>()
+
+<span style="color:#c792ea">if</span> r[<span style="color:#f78c6c">"status"</span>]:
+    <span style="color:#89ddff">print</span>(<span style="color:#f78c6c">"Judul:"</span>, r[<span style="color:#f78c6c">"title"</span>])
+    <span style="color:#89ddff">print</span>(<span style="color:#f78c6c">"File:"</span>, r[<span style="color:#f78c6c">"url"</span>])
+<span style="color:#c792ea">else</span>:
+    <span style="color:#89ddff">print</span>(<span style="color:#f78c6c">"Error:"</span>, r[<span style="color:#f78c6c">"error"</span>])</pre>
+
+      <pre data-lang="php" hidden>$url = <span style="color:#f78c6c">"https://youtu.be/VIDEO_ID"</span>;
+$key = <span style="color:#f78c6c">"API_KEY"</span>;
+
+$api = <span style="color:#f78c6c">"https://api.habi.my.id/api/ytmp3?url="</span> . <span style="color:#82aaff">urlencode</span>($url) . <span style="color:#f78c6c">"&amp;apikey="</span> . $key;
+$data = <span style="color:#82aaff">json_decode</span>(<span style="color:#82aaff">file_get_contents</span>($api), <span style="color:#ff9cac">true</span>);
+
+<span style="color:#c792ea">if</span> ($data[<span style="color:#f78c6c">'status'</span>]) {
+    <span style="color:#89ddff">echo</span> <span style="color:#f78c6c">"Judul: "</span> . $data[<span style="color:#f78c6c">'title'</span>] . <span style="color:#ff9cac">"\n"</span>;
+    <span style="color:#89ddff">echo</span> <span style="color:#f78c6c">"File: "</span> . $data[<span style="color:#f78c6c">'url'</span>];
+} <span style="color:#c792ea">else</span> {
+    <span style="color:#89ddff">echo</span> <span style="color:#f78c6c">"Error: "</span> . $data[<span style="color:#f78c6c">'error'</span>];
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TESTER ══════════ -->
+<section id="tester">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Playground</span>
+      <h2>Coba Langsung</h2>
+      <p>Pilih endpoint, isi URL-nya, lalu klik Kirim. API key disimpan lokal di browsermu.</p>
+    </div>
+
+    <div class="tester">
+      <form id="t-form">
+        <div class="tester-row">
+          <select class="field" id="t-ep" style="flex:0 0 200px">
+            <optgroup label="Downloader">
+              <option value="/api/ytmp3" data-param="url">/api/ytmp3</option>
+              <option value="/api/ytmp4" data-param="url">/api/ytmp4</option>
+              <option value="/api/info" data-param="url">/api/info</option>
+              <option value="/api/direct" data-param="url" data-extra="&amp;format=mp3">/api/direct</option>
+              <option value="/api/tiktok" data-param="url">/api/tiktok</option>
+              <option value="/api/instagram" data-param="url">/api/instagram</option>
+              <option value="/api/facebook" data-param="url">/api/facebook</option>
+            </optgroup>
+            <optgroup label="Tools">
+              <option value="/api/translate" data-param="text" data-extra="&amp;to=id">/api/translate</option>
+              <option value="/api/webfetch" data-param="url">/api/webfetch</option>
+              <option value="/api/lirik" data-param="q">/api/lirik</option>
+              <option value="/api/phonespecs" data-param="q">/api/phonespecs</option>
+            </optgroup>
+          </select>
+          <input class="field" id="t-input" placeholder="https://..." autocomplete="off">
+        </div>
+        <div class="tester-row">
+          <input class="field" id="t-key" placeholder="API Key kamu (opsional untuk test)" autocomplete="off" style="font-family:var(--mono)">
+          <button type="submit" class="btn btn-primary" style="padding:11px 26px">Kirim →</button>
+        </div>
+      </form>
+      <div class="out" id="t-out">Hasil respons akan muncul di sini…</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ DAFTAR ══════════ -->
+<section id="mulai">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Mulai</span>
+      <h2>Daftar API Key Gratis</h2>
+      <p>Tiga langkah sederhana, tanpa registrasi email, tanpa ribet.</p>
+    </div>
+
+    <div class="steps" style="max-width:820px;margin:0 auto">
+      <div class="step">
+        <div>
+          <h3>Buka halaman register</h3>
+          <p>Kirim permintaan ke <code>/api/register?note=nama-kamu</code>. Nama bersifat opsional, tapi membantu kami mengidentifikasi pemakai.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Salin API key</h3>
+          <p>Server membalas JSON berisi <code>apikey</code> kamu. Simpan baik-baik — key ini tidak bisa dilihat ulang dari dashboard.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Mulai panggil endpoint</h3>
+          <p>Tambahkan <code>&amp;apikey=KEY</code> pada setiap request. Kuota gratis <b data-cfg="quota">25 req/hari</b> — lebih dari cukup untuk projэct pribadi.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tester" style="max-width:820px;margin:26px auto 0">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Coba daftar key sekarang</h3>
+      <p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Isi nama (boleh dikosongkan), lalu klik Daftar.</p>
+      <form id="reg-form">
+        <div class="tester-row">
+          <input class="field" id="reg-name" placeholder="Nama / catatan (opsional)" autocomplete="off">
+          <button type="submit" class="btn btn-primary" style="padding:11px 26px">Daftar</button>
+        </div>
+      </form>
+      <div class="out" id="reg-out">API key kamu akan muncul di sini…</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FAQ ══════════ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">FAQ</span>
+      <h2>Pertanyaan Umum</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Apakah API ini gratis?</summary>
+        <p>Ya. Setiap key baru mendapat kuota gratis <b data-cfg="quota">25 req/hari</b> tanpa batas waktu. Kalau kuota habis, tunggu reset di hari berikutnya. Untuk kebutuhan lebih besar, hubungi owner untuk paket premium.</p>
+      </details>
+      <details>
+        <summary>Bagaimana cara upgrade ke premium?</summary>
+        <p>Hubungi owner lewat WhatsApp. Paket premium menambah kuota harian, prioritas antrean, dan akses endpoint eksklusif. Buka <a href="/pricing" style="color:var(--brand-2)">halaman harga</a> untuk detail paketnya.</p>
+      </details>
+      <details>
+        <summary>Format responsnya apa?</summary>
+        <p>Selalu JSON dengan field <code>status</code>. Kalau sukses, <code>status: true</code> disertai data. Kalau gagal, <code>status: false</code> disertai <code>error</code> berisi pesan. Endpoint yang mengembalikan file (gambar, audio, video) langsung mengirim biner.</p>
+      </details>
+      <details>
+        <summary>Kenapa saya dapat error "APIkey tidak valid"?</summary>
+        <p>Pastikan parameter <code>apikey</code> ditulis lengkap dan tidak ada spasi. Kalau key kamu habis kuota,，好好 tunggu reset harian atau hubungi owner untuk upgrade.</p>
+      </details>
+      <details>
+        <summary>Apakah boleh dipakai untuk bot WhatsApp?</summary>
+        <p>Boleh, termasuk untuk bot pribadi maupun bot grup. Yang dilarang: menjual ulang layanannya,quita在前/share endpoint-nya sebagai produk jadi, dan menyalahgunakan API untuk hal yang melanggar hukum.</p>
+      </details>
+      <details>
+        <summary>Kenapa YouTube Sometimes gagal?</summary>
+        <p>YouTube aktif memblokir beberapa datacenter IP. Kalau sebuah video gagal, coba endpoint <code>/api/direct</code> atau tunggu beberapa saat lalu ulangi. Link yang butuh login (privat/.member) tidak bisa diakses.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA ══════════ -->
+<section style="padding-top:20px;padding-bottom:80px">
+  <div class="wrap">
+    <div class="card" style="text-align:center;padding:48px 28px;background:linear-gradient(135deg,rgba(124,92,255,.13),rgba(0,212,255,.07));">
+      <h2 style="margin-bottom:12px">Siap mulai?</h2>
+      <p style="color:var(--muted);max-width:460px;margin:0 auto 26px">Ambil API key gratis kamu sekarang — tanpa daftar, tanpa biaya.</p>
+      <div class="hero-cta" style="margin:0">
+        <a href="#daftar" class="btn btn-primary" style="padding:13px 30px;font-size:15px">🚀 Get API Key</a>
+        <a href="/docs" class="btn btn-ghost" style="padding:13px 26px;font-size:15px">📖 Dokumentasi Lengkap</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <a href="/" class="brand" style="margin-bottom:10px">
+        <span class="brand-mark">H</span><span>HABI API</span>
+      </a>
+      <p>REST API downloader & tools — dibuat oleh <span data-cfg="owner">Habibih Cloud Official ID</span>.</p>
+    </div>
+    <div class="foot-links">
+      <a href="/docs">Dokumentasi</a>
+      <a href="/pricing">Harga</a>
+      <a data-cfg="wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a data-cfg="wa" href="#" target="_blank" rel="noopener">Grup</a>
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:22px;padding-top:20px;border-top:1px solid var(--border)">
+    <p style="text-align:center;color:#5a6480;font-size:12.5px">
+      © <span id="year">2026</span> HABI API · Dibuat dengan Next.js &amp; Baileys ecosystem · Jalankan dengan tanggung jawab.
+    </p>
+  </div>
+</footer>
+
+<script src="/assets/app.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear()</script>
+</body>
+</html>
