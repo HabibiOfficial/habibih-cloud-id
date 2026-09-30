@@ -9,23 +9,36 @@
 
 import { spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /* ---------------------------------------------------------
  * Path yt-dlp
+ * Cari dari beberapa lokasi supaya tetap jalan walau env
+ * tidak ikut ter-deploy (mis. saat auto-deploy menimpa file).
  * ------------------------------------------------------- */
 function resolveYtDlp() {
-  // 1) env override
-  if (process.env.YTDLP_PATH && require('fs').existsSync(process.env.YTDLP_PATH)) {
-    return process.env.YTDLP_PATH
+  const fs = require('node:fs')
+  const candidates = []
+
+  // 1) override dari environment
+  if (process.env.YTDLP_PATH) candidates.push(process.env.YTDLP_PATH)
+  // 2) folder bin di dalam project
+  candidates.push(path.join(process.cwd(), 'bin', 'yt-dlp'))
+  candidates.push(path.join(__dirname, '..', 'bin', 'yt-dlp'))
+  // 3) lokasi umum di server
+  candidates.push('/home/deploy/bin/yt-dlp')
+  candidates.push('/usr/local/bin/yt-dlp')
+  candidates.push('/usr/bin/yt-dlp')
+
+  for (const c of candidates) {
+    try {
+      if (c && fs.existsSync(c)) return c
+    } catch { /* lanjut ke kandidat berikutnya */ }
   }
-  // 2) binary lokal di project (di-download saat setup)
-  const local = `${process.cwd()}/bin/yt-dlp`
-  try {
-    if (require('fs').existsSync(local)) return local
-  } catch { /* abaikan */ }
-  // 3) system PATH
   return 'yt-dlp'
 }
 
