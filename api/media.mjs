@@ -12,6 +12,7 @@
  * =========================================================
  */
 
+import { existsSync } from 'node:fs'
 import { runYtDlp } from './downloader.mjs'
 
 const UA =
@@ -82,11 +83,34 @@ function tidy(url) {
 }
 
 /* ---------------------------------------------------------
+ * Cookie
+ *
+ * Beberapa platform (Instagram terutama) menolak request
+ * tanpa cookie. Cookie dibaca dari file format Netscape
+ * yang taruh di server, lalu diarahkan lewat env:
+ *
+ *   HABI_INSTAGRAM_COOKIES=/home/deploy/cookies/instagram.txt
+ *   HABI_TIKTOK_COOKIES=/home/deploy/cookies/tiktok.txt
+ *
+ * File ini TIDAK ada di repo — hanya di server.
+ * ------------------------------------------------------- */
+function cookiesFor(platform) {
+  const file = process.env[`HABI_${String(platform).toUpperCase()}_COOKIES`]
+  if (!file) return []
+  try {
+    if (!existsSync(file)) return []
+  } catch {
+    return []
+  }
+  return ['--cookies', file]
+}
+
+/* ---------------------------------------------------------
  * 1) yt-dlp native — jalur utama & milik sendiri
  * ------------------------------------------------------- */
-async function viaYtDlp(url, { wantAudio = false } = {}) {
+async function viaYtDlp(url, { wantAudio = false, platform = 'other' } = {}) {
   const { stdout } = await runYtDlp(
-    [url, '-j', '--no-playlist', '--no-warnings', '--skip-download'],
+    [url, '-j', '--no-playlist', '--no-warnings', '--skip-download', ...cookiesFor(platform)],
     55000
   )
 
@@ -246,7 +270,7 @@ async function viaGencipta(url, platform) {
 export async function resolveMedia(inputUrl, { wantAudio = false } = {}) {
   const platform = detectPlatform(inputUrl)
 
-  const chain = [() => viaYtDlp(inputUrl, { wantAudio })]
+  const chain = [() => viaYtDlp(inputUrl, { wantAudio, platform })]
   if (platform === 'tiktok') {
     chain.push(() => viaTikwm(inputUrl))
     chain.push(() => viaGencipta(inputUrl, 'tiktok'))
@@ -271,6 +295,23 @@ export async function resolveMedia(inputUrl, { wantAudio = false } = {}) {
   }
 
   const detail = attempts.map((a, i) => `${i + 1}. ${a.error || 'ok'}`).join(' | ')
+
+  // Instagram hampir selalu butuh cookie. Kalau cookie belum
+  // dipasang, poke user ke arah yang benar.
+  const cookieHint = (platform) =>
+    process.env[`HABI_${String(platform).toUpperCase()}_COOKIES`]
+      ? 'Cookie sudah dipasang tapi tetap gagal — kemungkinan post privat, atau cookie-nya kedaluwarsa.'
+      : 'Instagram menolak request tanpa login. Owner perlu menyiapkan file cookie (format Netscape) lalu set ' +
+        `HABI_${String(platform).toUpperCase()}_COOKIES=/path/cookies.txt di server.`
+
+  if (platform === 'instagram' && !process.env.HABI_INSTAGRAM_COOKIES) {
+    throw new Error(
+      'Instagram memblokir request anonim, jadi endpoint ini butuh cookie di server. ' +
+      cookieHint(platform) +
+      ` Detail: ${detail}`
+    )
+  }
+
   throw new Error(`Gagal memuat media (${platform}). ${detail}`)
 }
 
