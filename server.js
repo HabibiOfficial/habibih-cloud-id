@@ -302,8 +302,18 @@ app.all(/^\/api(\/.*)?$/i, async (req, res) => {
  * Halaman
  * ------------------------------------------------------- */
 app.use(express.static(PUBLIC_DIR, {
-  maxAge: process.env.NODE_ENV === 'production' ? '1h' : 0,
-  extensions: ['html'],
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    // HTML harus selalu fresh supaya update langsung terlihat.
+    // Aset statis boleh di-cache sebentar.
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+      res.setHeader('Pragma', 'no-cache')
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate')
+    }
+  },
 }))
 
 app.get('/docs', (_req, res) => res.sendFile(path.join(PUBLIC_DIR, 'docs.html')))
