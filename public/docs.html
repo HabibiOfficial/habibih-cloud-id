@@ -6,7 +6,7 @@
 <title>Dokumentasi — HABI API</title>
 <meta name="description" content="Dokumentasi lengkap HABI API: downloader YouTube, TikTok, Instagram, Facebook, dan tools OCR, translate, TTS, screenshot.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
-<link rel="stylesheet" href="/assets/style.css?v=20261001a">
+<link rel="stylesheet" href="/assets/style.css?v=20261001b">
 <style>
   .doc-layout { display: grid; grid-template-columns: 236px 1fr; gap: 44px; align-items: start; }
   .doc-side { position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 8px; }
@@ -221,12 +221,17 @@
             <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Isi pesan. Mendukung baris baru dan emoji</td></tr>
             <tr><td><code>time</code></td><td>string</td><td>Tidak</td><td>Jam pada status bar. Default <code>09.41</code></td></tr>
             <tr><td><code>batteries</code></td><td>string</td><td>Tidak</td><td>Level baterai, mis <code>87%</code></td></tr>
+            <tr><td><code>menu</code></td><td>boolean</td><td>Tidak</td><td>Tampilkan menu Balas/Teruskan. Default <code>true</code>. Set <code>false</code> untuk versi bersih</td></tr>
             <tr><td><code>operator</code> / <code>timebar</code> / <code>wifi</code></td><td>boolean</td><td>Tidak</td><td>Tampilkan elemen tersebut</td></tr>
           </table></div>
         </div>
         <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
-        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Selamat+datang&amp;time=09.41" -o chat.png</pre></div>
-        <div class="res-note"><b>Output:</b> file PNG 680 px lebar. Menu konteks otomatis dihapus supaya hasilnya bersih.</div>
+        <pre><span style="color:#89ddff"># Versi lengkap dengan menu konteks (default)</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&amp;time=2:21" -o chat.png
+
+<span style="color:#89ddff"># Versi bersih tanpa menu</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&amp;menu=false" -o chat-clean.png</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG 680 px lebar. Default-nya sudah termasuk menu konteks (Balas, Teruskan, Salin, dst) supaya hasilnya terlihat natural seperti screenshot WhatsApp asli.</div>
       </div>
 
       <div class="ep-block" id="meme">
@@ -536,7 +541,7 @@
   </div>
 </footer>
 
-<script src="/assets/app.js?v=20261001a"></script>
+<script src="/assets/app.js?v=20261001b"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear()</script>
 </body>
 </html>
