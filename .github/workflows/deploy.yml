@@ -19,46 +19,49 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Siapkan SSH key
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
       - name: Deploy via SSH
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_PORT: ${{ secrets.VPS_PORT }}
           VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-          APP_DIR: ${{ vars.APP_DIR || '/home/deploy/apps/habi-api-web' }}
         run: |
           set -euo pipefail
-          mkdir -p ~/.ssh
-          echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          APP_DIR='/home/deploy/apps/habi-api-web'
+          SSH_OPTS='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR'
 
-          # known_hosts dilewati supaya tidak error host key
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-              -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "echo 'SSH OK'"
+          # Pastikan folder milik user yang dipakai
+          ssh $SSH_OPTS -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            "sudo chown -R \$USER:\$USER $APP_DIR 2>/dev/null || true"
 
-          # rsync file (node_modules & .git tidak ikut)
-          rsync -az --delete \
+          # Kirim file (tanpa attempts set times/owner)
+          rsync -az --delete --no-times --no-perms --omit-dir-times \
             --exclude 'node_modules' \
             --exclude '.git' \
             --exclude '.env' \
-            -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p $VPS_PORT" \
+            -e "ssh $SSH_OPTS -p $VPS_PORT" \
             ./ "$VPS_USER@$VPS_HOST:$APP_DIR/"
 
-          # jalankan script deploy di server
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-              -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-              "cd $APP_DIR && bash scripts/deploy.sh"
+          # Deploy
+          ssh $SSH_OPTS -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            "cd $APP_DIR && bash scripts/deploy.sh"
 
       - name: Smoke test
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
           set -euo pipefail
-          mkdir -p ~/.ssh
-          echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          sleep 5
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-              "${{ secrets.VPS_USER }}@$VPS_HOST" \
-              "curl -fsS http://127.0.0.1:8080/healthz"
+          sleep 4
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
+              -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+              "curl -fsS http://127.0.0.1:8080/healthz && echo"
