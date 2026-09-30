@@ -103,9 +103,65 @@ app.get('/healthz', (_req, res) => {
  * Semua tetap butuh apikey & ikut foramat JSON yang sama.
  * ------------------------------------------------------- */
 
+/* ---------------------------------------------------------
+ * Endpoint butuh API key
+ *
+ * Route di bawah ini boros resource (spawn yt-dlp, ambil
+ * gambar dari internet, render canvas) jadi WAJIB pakai key
+ * yang valid. Key divalidasi lewat backend yang sudah ada,
+ * jadi satu sumber kebenaran untuk semua user.
+ * ------------------------------------------------------- */
+const keyCache = new Map()
+const KEY_TTL = 5 * 60 * 1000
+
+/** Ambil key dari ?apikey= / x-api-key / Authorization */
+function readKey(req) {
+  return String(
+    req.query.apikey ||
+    req.get('x-api-key') ||
+    (req.get('authorization') || '').replace(/^Bearer\s+/i, '') ||
+    ''
+  ).trim()
+}
+
+/** Validasi key ke backend; cache hasilnya 5 menit */
+async function keyIsValid(key) {
+  if (!key) return false
+  const hit = keyCache.get(key)
+  if (hit && Date.now() - hit.at < KEY_TTL) return hit.ok
+  let ok = false
+  try {
+    const res = await fetch(`${UPSTREAM}/api/ping?apikey=${encodeURIComponent(key)}`, {
+      signal: AbortSignal.timeout(8000),
+      headers: { accept: 'application/json' },
+    })
+    ok = res.status !== 401
+  } catch {
+    // Backend tidak bisa dihubungi → fail-open supaya tidak mematikan API,
+    // tapi tetap dicatat supaya ketahuan di log.
+    console.warn('  \x1b[33m!\x1b[0m  validasi key gagal, sementara lolos (fail-open)')
+    return true
+  }
+  keyCache.set(key, { ok, at: Date.now() })
+  return ok
+}
+
+/**
+ * Middleware Express: tolak request yang tidak punya key valid.
+ * Dipakai sebagai middleware untuk route gambar (yang ditulis
+ * dengan app.get langsung) dan dipanggil manual di secured().
+ */
+async function requireKey(req, res, next) {
+  if (await keyIsValid(readKey(req))) return next()
+  return res.status(401).json({
+    status: false,
+    error: 'APIkey tidak valid. Daftar dulu: /api/register',
+  })
+}
+
 /** Bungkus handler jadi route Express dengan timeout */
 function native(pathname, handler) {
-  app.get(pathname, async (req, res) => {
+  app.get(pathname, requireKey, async (req, res) => {
     const started = Date.now()
     try {
       const out = await handler(req, res)
@@ -188,7 +244,7 @@ const BOOLS = (v, def = true) => {
   return !/^(0|false|no|off)$/i.test(String(v))
 }
 
-app.get('/api/brat', async (req, res) => {
+app.get('/api/brat', requireKey, async (req, res) => {
   const started = Date.now()
   try {
     const buf = await imageTools.brat(need(req, 'text'), { blur: req.query.blur })
@@ -200,7 +256,7 @@ app.get('/api/brat', async (req, res) => {
   }
 })
 
-app.get('/api/bratvid', async (req, res) => {
+app.get('/api/bratvid', requireKey, async (req, res) => {
   const started = Date.now()
   try {
     const format = req.query.format === 'webm' ? 'webm' : 'mp4'
@@ -216,7 +272,7 @@ app.get('/api/bratvid', async (req, res) => {
   }
 })
 
-app.get('/api/iqc', async (req, res) => {
+app.get('/api/iqc', requireKey, async (req, res) => {
   const started = Date.now()
   try {
     const batteries = req.query.batteries
@@ -240,7 +296,7 @@ app.get('/api/iqc', async (req, res) => {
   }
 })
 
-app.get('/api/meme', async (req, res) => {
+app.get('/api/meme', requireKey, async (req, res) => {
   const started = Date.now()
   try {
     const buf = await imageTools.meme({
@@ -257,7 +313,7 @@ app.get('/api/meme', async (req, res) => {
   }
 })
 
-app.get('/api/watermark', async (req, res) => {
+app.get('/api/watermark', requireKey, async (req, res) => {
   const started = Date.now()
   try {
     const buf = await imageTools.watermark({
@@ -281,60 +337,10 @@ native('/api/humanizer', (req) =>
   })
 )
 
-/* ---------------------------------------------------------
- * Endpoint butuh API key
- *
- * Route di bawah ini boros resource (spawn yt-dlp, ambil
- * gambar dari internet, render canvas) jadi WAJIB pakai key
- * yang valid. Key divalidasi lewat backend yang sudah ada,
- * jadi satu sumber kebenaran untuk semua user.
- * ------------------------------------------------------- */
-const keyCache = new Map()
-const KEY_TTL = 5 * 60 * 1000
-
-/** Ambil key dari ?apikey= / x-api-key / Authorization */
-function readKey(req) {
-  return String(
-    req.query.apikey ||
-    req.get('x-api-key') ||
-    (req.get('authorization') || '').replace(/^Bearer\s+/i, '') ||
-    ''
-  ).trim()
-}
-
-/** Validasi key ke backend; cache hasilnya 5 menit */
-async function keyIsValid(key) {
-  if (!key) return false
-  const hit = keyCache.get(key)
-  if (hit && Date.now() - hit.at < KEY_TTL) return hit.ok
-  let ok = false
-  try {
-    const res = await fetch(`${UPSTREAM}/api/ping?apikey=${encodeURIComponent(key)}`, {
-      signal: AbortSignal.timeout(8000),
-      headers: { accept: 'application/json' },
-    })
-    ok = res.status !== 401
-  } catch {
-    // Backend tidak bisa dihubungi → fail-open supaya tidak mematikan API,
-    // tapi tetap dicatat supaya ketahuan di log.
-    console.warn('  \x1b[33m!\x1b[0m  validasi key gagal, sementara lolos (fail-open)')
-    return true
-  }
-  keyCache.set(key, { ok, at: Date.now() })
-  return ok
-}
-
 /** Bungkus handler jadi route yang mewajibkan API key */
 function secured(pathname, handler) {
-  app.get(pathname, async (req, res) => {
+  app.get(pathname, requireKey, async (req, res) => {
     const started = Date.now()
-    const key = readKey(req)
-    if (!(await keyIsValid(key))) {
-      return res.status(401).json({
-        status: false,
-        error: 'APIkey tidak valid. Daftar dulu: /api/register',
-      })
-    }
     try {
       const out = await handler(req, res)
       if (res.headersSent || out === undefined) return
