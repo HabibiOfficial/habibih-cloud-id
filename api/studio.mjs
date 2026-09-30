@@ -69,16 +69,30 @@ function isPrivateIp(ip) {
   return true
 }
 
+/**
+ * Error khusus saat URL ditolak oleh guard.
+ * Dibedakan dari error lain supaya pemanggil bisa membedakannya:
+ * URL yang DITOLAK harus muncul ke user, sedangkan gambar yang
+ * sekadar gagal dimuat (404, timeout) boleh diam-diam pakai fallback.
+ */
+export class UrlRejectedError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'UrlRejectedError'
+    this.rejected = true
+  }
+}
+
 /** Pastikan URL aman: hanya http(s) dan bukan alamat internal */
 export async function assertSafeUrl(inputUrl) {
   let url
   try {
     url = new URL(inputUrl)
   } catch {
-    throw new Error('URL tidak valid.')
+    throw new UrlRejectedError('URL tidak valid.')
   }
   if (!/^https?:$/.test(url.protocol)) {
-    throw new Error('URL harus diawali http:// atau https://')
+    throw new UrlRejectedError('URL harus diawali http:// atau https://')
   }
   const host = url.hostname.replace(/^\[|\]$/g, '')
   const literal = net.isIP(host)
@@ -86,7 +100,7 @@ export async function assertSafeUrl(inputUrl) {
   if (!addrs.length) throw new Error(`Host "${url.hostname}" tidak bisa diakses.`)
   for (const a of addrs) {
     if (isPrivateIp(a.address)) {
-      throw new Error('URL ditolak: alamat internal/network lokal tidak diizinkan.')
+      throw new UrlRejectedError('URL ditolak: alamat internal/network lokal tidak diizinkan.')
     }
   }
   return url
@@ -186,6 +200,21 @@ function fromDataUrl(dataUrl) {
   const m = /^data:image\/[a-z0-9.+-]+;base64,(.+)$/i.exec(String(dataUrl || '').trim())
   if (!m) throw new Error('Data URL tidak valid. Gunakan format data:image/png;base64,...')
   return Buffer.from(m[1], 'base64')
+}
+
+/**
+ * Muat gambar untuk elemen opsional (avatar / latar / kartu).
+ * - URL yang DITOLAK guard  → lempar error, jangan ditelan diam-diam
+ * - Gambar yang gagal dimuat  → null, pemanggil pakai fallback
+ */
+async function loadOptionalImage(source, loadImage) {
+  if (!source) return null
+  try {
+    return await loadImage(await resolveSource(source))
+  } catch (err) {
+    if (err instanceof UrlRejectedError) throw err
+    return null
+  }
 }
 
 /** Terima URL http(s) maupun data URL, kembalikan Buffer gambar */
@@ -289,7 +318,7 @@ export async function welcomeCard({
   // Foto khusus kalau ada
   let bgImg = null
   if (background) {
-    try { bgImg = await loadImage(await resolveSource(background)) } catch { bgImg = null }
+    bgImg = await loadOptionalImage(background, loadImage)
   }
   if (bgImg) {
     ctx.save()
@@ -320,7 +349,7 @@ export async function welcomeCard({
   const AY = PY + (PH - A) / 2
   let av = null
   if (avatar) {
-    try { av = await loadImage(await resolveSource(avatar)) } catch { av = null }
+    av = await loadOptionalImage(avatar, loadImage)
   }
   ctx.save()
   ctx.beginPath()
@@ -693,7 +722,7 @@ export async function fakeReply({
     roundedRect(ctx, M + 10, y + 10, BW - 20, IMG_H, 12)
     ctx.clip()
     let pic = null
-    try { pic = image ? await loadImage(await resolveSource(image)) : null } catch { pic = null }
+    pic = await loadOptionalImage(image, loadImage)
     if (pic) {
       const s = Math.max((BW - 20) / pic.width, IMG_H / pic.height)
       ctx.drawImage(pic, M + 10 + ((BW - 20) - pic.width * s) / 2, y + 10 + (IMG_H - pic.height * s) / 2, pic.width * s, pic.height * s)
@@ -723,7 +752,7 @@ export async function fakeReply({
     roundedRect(ctx, M + 10, y + 10, BW - 20, IMG_H, 12)
     ctx.clip()
     let pic = null
-    try { pic = image ? await loadImage(await resolveSource(image)) : null } catch { pic = null }
+    pic = await loadOptionalImage(image, loadImage)
     if (pic) {
       const s = Math.max((BW - 20) / pic.width, IMG_H / pic.height)
       ctx.drawImage(pic, M + 10 + ((BW - 20) - pic.width * s) / 2, y + 10 + (IMG_H - pic.height * s) / 2, pic.width * s, pic.height * s)
@@ -770,6 +799,7 @@ export default {
   fakeReply,
   fetchImage,
   assertSafeUrl,
+  UrlRejectedError,
   REPLY_VARIANTS,
   REACTIONS,
 }
