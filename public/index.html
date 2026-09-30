@@ -6,7 +6,7 @@
 <title>HABI API — Downloader & Tools REST API</title>
 <meta name="description" content="REST API gratis untuk download YouTube, TikTok, Instagram, Facebook, plus tools: OCR, translate, TTS, screenshot, dan lainnya. Didukung API key & rate limit.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
-<link rel="stylesheet" href="/assets/style.css?v=20261001b">
+<link rel="stylesheet" href="/assets/style.css?v=20261001c">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
 <!-- ══════════ HERO ══════════ -->
 <header class="hero">
   <div class="wrap">
-    <div class="pill"><span class="dot"></span> Server online · 19 endpoint aktif</div>
+    <div class="pill"><span class="dot"></span> Server online · 35 endpoint aktif</div>
     <h1>REST API <span class="grad">Downloader & Tools</span><br>yang gampang dipakai</h1>
     <p class="lead">
       Satu API untuk download media dari YouTube, TikTok, Instagram, Facebook,
@@ -50,7 +50,7 @@
     </div>
 
     <div class="stats">
-      <div class="stat"><b>29</b><span>Endpoint</span></div>
+      <div class="stat"><b>35</b><span>Endpoint</span></div>
       <div class="stat"><b>9</b><span>Platform</span></div>
       <div class="stat"><b data-cfg="quota">25 req/hari</b><span>Kuota Gratis</span></div>
       <div class="stat"><b>JSON</b><span>Format Balasan</span></div>
@@ -154,6 +154,16 @@
       <a href="/docs#phonecompare" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/phonecompare</span></div><div class="ep-desc">Bandingkan 2 HP</div></a>
       <a href="/docs#removebg" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/removebg</span></div><div class="ep-desc">Hapus background foto</div></a>
       <a href="/docs#pdfcompress" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/pdfcompress</span></div><div class="ep-desc">Kompres ukuran file PDF</div></a>
+    </div>
+
+    <div style="font-size:14px;color:var(--muted);margin:24px 0 16px;font-weight:650;letter-spacing:.02em">🆕 Studio — self-hosted</div>
+    <div class="grid g3">
+      <a href="/docs#resolve" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/resolve</span></div><div class="ep-desc">URL media TikTok/FB/IG/X + metadata (JSON)</div></a>
+      <a href="/docs#detect" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/detect</span></div><div class="ep-desc">Deteksi platform dari URL</div></a>
+      <a href="/docs#sticker" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/sticker</span></div><div class="ep-desc">Jadikan foto jadi stiker WA (WebP 512)</div></a>
+      <a href="/docs#welcome" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/welcome</span></div><div class="ep-desc">Kartu sambutan member grup</div></a>
+      <a href="/docs#reply" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/reply</span></div><div class="ep-desc">Fake balasan chat, 5 varian</div></a>
+      <a href="/docs#reply-variants" class="ep"><div class="ep-top"><span class="method">GET</span><span class="ep-path">/api/reply/variants</span></div><div class="ep-desc">Daftar varian fake reply</div></a>
     </div>
   </div>
 </section>
@@ -414,7 +424,7 @@ $data = <span style="color:#82aaff">json_decode</span>(<span style="color:#82aaf
   </div>
 </footer>
 
-<script src="/assets/app.js?v=20261001b"></script>
+<script src="/assets/app.js?v=20261001c"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear()</script>
 </body>
 </html>
