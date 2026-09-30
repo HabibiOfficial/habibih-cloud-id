@@ -164,15 +164,59 @@ function initRegister() {
   if (!form) return
   const name = form.querySelector('#reg-name')
   const out = document.getElementById('reg-out')
+  const card = document.getElementById('reg-card')
+  const keyEl = document.getElementById('reg-key')
+  const copyBtn = document.getElementById('reg-copy')
+  const submitBtn = form.querySelector('button[type="submit"]')
+
+  let issuedKey = ''
+
+  // Tombol salin di dalam kartu
+  copyBtn?.addEventListener('click', async () => {
+    if (!issuedKey) return
+    await copyText(issuedKey, 'API key disalin!')
+    copyBtn.textContent = '✅ Tersalin'
+    setTimeout(() => { copyBtn.textContent = '📋 Salin' }, 2000)
+  })
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
-    out.textContent = 'Mendaftarkan…'
+
+    submitBtn.disabled = true
+    submitBtn.textContent = 'Mendaftarkan…'
+    out.textContent = 'Meminta API key…'
+    if (card) card.hidden = true
+
     try {
       const res = await fetch(`${CFG.baseUrl}/api/register?note=${encodeURIComponent(name.value.trim() || 'anon')}`)
-      out.textContent = await res.text()
+      const text = await res.text()
+
+      let data
+      try { data = JSON.parse(text) } catch { data = null }
+
+      if (!data || data.status !== true || !data.apikey) {
+        out.textContent = text || 'Gagal mengambil API key.'
+        return
+      }
+
+      issuedKey = data.apikey
+      out.textContent = text
+      if (keyEl) keyEl.textContent = issuedKey
+      if (card) {
+        card.hidden = false
+        setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120)
+      }
+      // Simpan juga di browser biar tester bisa langsung pakai
+      const keyField = document.getElementById('t-key')
+      if (keyField) {
+        keyField.value = issuedKey
+        try { localStorage.setItem('habi_key', issuedKey) } catch {}
+      }
     } catch (err) {
       out.textContent = `Gagal: ${err.message}`
+    } finally {
+      submitBtn.disabled = false
+      submitBtn.textContent = 'Daftar'
     }
   })
 }
