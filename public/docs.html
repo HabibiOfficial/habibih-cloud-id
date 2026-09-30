@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dokumentasi — HABI API</title>
+<meta name="description" content="Dokumentasi lengkap HABI API: downloader YouTube, TikTok, Instagram, Facebook, dan tools OCR, translate, TTS, screenshot.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  .doc-layout { display: grid; grid-template-columns: 236px 1fr; gap: 44px; align-items: start; }
+  .doc-side { position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 8px; }
+  .doc-side h5 { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 22px 0 9px; font-weight: 700; }
+  .doc-side a { display: block; padding: 6.5px 11px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13.5px; font-family: var(--mono); transition: all .16s; }
+  .doc-side a:hover { color: var(--text); background: var(--panel); }
+  .doc-side a.sib { margin-left: 10px; padding: 4px 11px; font-size: 12.5px; }
+  .doc-body section { padding: 0 0 46px; }
+  .ep-block { border-top: 1px solid var(--border); padding-top: 30px; margin-top: 30px; }
+  .ep-head { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; margin-bottom: 8px; }
+  .ep-head h3 { font-family: var(--mono); font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); font-family: var(--font); letter-spacing: 0; }
+  .badge.free { background: rgba(34,211,154,.14); border-color: rgba(34,211,154,.3); color: var(--ok); }
+  .desc { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
+  .params { margin: 20px 0; }
+  .params h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 10px; font-weight: 700; }
+  .code { margin-top: 16px; }
+  .res-note { font-size: 13.5px; color: var(--muted); background: var(--panel); border-left: 2px solid var(--brand-2); padding: 11px 15px; border-radius: 0 8px 8px 0; margin-top: 14px; }
+  .res-note b { color: var(--text); }
+  @media (max-width: 900px) { .doc-layout { grid-template-columns: 1fr; } .doc-side { position: static; max-height: none; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 30px; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand"><span class="brand-mark">H</span><span>HABI API</span></a>
+    <div class="nav-links">
+      <a href="/">Beranda</a>
+      <a href="/docs">Dokumentasi</a>
+      <a href="/pricing">Harga</a>
+      <a href="/#daftar" class="btn btn-primary">Get API Key</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" style="padding-top:44px">
+
+  <div style="text-align:center;margin-bottom:44px">
+    <span class="eyebrow">Dokumentasi</span>
+    <h1 style="font-size:clamp(30px,5vw,46px);margin-bottom:12px">HABI API Reference</h1>
+    <p style="color:var(--muted);max-width:560px;margin:0 auto">Semua endpoint, parameter, dan contoh penggunaan.</p>
+  </div>
+
+  <div class="doc-layout">
+    <!-- SIDEBAR -->
+    <aside class="doc-side">
+      <h5>Mulai</h5>
+      <a href="#overview">Overview</a>
+      <a href="#auth">Autentikasi</a>
+      <a href="#response">Format Respons</a>
+      <a href="#errors">Kode Error</a>
+      <h5>Downloader</h5>
+      <a href="#ytmp3">/api/ytmp3</a>
+      <a href="#ytmp4">/api/ytmp4</a>
+      <a href="#info">/api/info</a>
+      <a href="#direct">/api/direct</a>
+      <a href="#tiktok">/api/tiktok</a>
+      <a href="#tiktok-audio">/api/tiktok-audio</a>
+      <a href="#facebook">/api/facebook</a>
+      <a href="#instagram">/api/instagram</a>
+      <a href="#file">/api/file</a>
+      <h5>Tools</h5>
+      <a href="#ocr">/api/ocr</a>
+      <a href="#translate">/api/translate</a>
+      <a href="#tts">/api/tts</a>
+      <a href="#ssweb">/api/ssweb</a>
+      <a href="#webfetch">/api/webfetch</a>
+      <a href="#lirik">/api/lirik</a>
+      <a href="#phonespecs">/api/phonespecs</a>
+      <a href="#phonecompare">/api/phonecompare</a>
+      <a href="#removebg">/api/removebg</a>
+      <a href="#pdfcompress">/api/pdfcompress</a>
+      <h5>Lainnya</h5>
+      <a href="/pricing">Harga</a>
+      <a href="/#faq">FAQ</a>
+    </aside>
+
+    <!-- BODY -->
+    <main class="doc-body">
+
+      <!-- OVERVIEW -->
+      <section id="overview">
+        <h2>Overview</h2>
+        <p class="desc">HABI API menyediakan REST API berformat JSON untuk mendownload media dari berbagai platform sekaligus menyediakan sejumlah tools pemrosesan teks dan gambar.</p>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Item</th><th>Nilai</th></tr>
+            <tr><td>Base URL</td><td><code>https://api.habi.my.id</code></td></tr>
+            <tr><td>Pfad API</td><td><code>/api</code></td></tr>
+            <tr><td>Method</td><td><code>GET</code></td></tr>
+            <tr><td>Format</td><td><code>application/json</code> (kecuali endpoint file)</td>
+            <tr><td>Autentikasi</td><td>Query parameter <code>&amp;apikey=KEY</code></td></tr>
+            <tr><td>Rate limit</td><td><code>25 request/hari</code> (gratis)</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- AUTH -->
+      <section id="auth">
+        <h2>Autentikasi</h2>
+        <p class="desc">Semua endpoint wajib menyertakan <code>apikey</code>. Key didapat gratis lewat endpoint register.</p>
+
+        <h4 style="font-size:14px;margin:22px 0 8px">Daftarkan Key</h4>
+        <div class="code">
+          <div class="code-head"><span class="tab on">Request</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+          <pre><span style="color:#89ddff">GET</span> <span data-cfg="baseUrl">https://api.habi.my.id</span>/api/register?note=nama-kamu</pre>
+        </div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"apikey":"HABI-1AE28878F6D6","limit":"25 req/hari","note":"Upgrade premium hubungi owner"}</code></div>
+
+        <h4 style="font-size:14px;margin:26px 0 8px">Gunakan Key</h4>
+        <div class="code">
+          <div class="code-head"><span class="tab on">Request</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+          <pre><span style="color:#89ddff">GET</span> <span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ytmp3?url=<span style="color:#ffb86c">https://youtu.be/VIDEO_ID</span>&amp;apikey=<span style="color:#ffb86c">HABI-1AE28878F6D6</span></pre>
+        </div>
+        <div class="res-note"><b>Catatan:</b> parameter <code>note</code> bersifat opsional. API key bersifat rahasia — jangan bagikan ke publik atau commit ke repository.</div>
+      </section>
+
+      <!-- RESPONSE -->
+      <section id="response">
+        <h2>Format Respons</h2>
+        <p class="desc">Semua respons memakai field <code>status</code> sebagai penanda berhasil atau gagal.</p>
+
+        <h4 style="font-size:14px;margin:20px 0 8px">Berhasil</h4>
+        <div class="code"><div class="code-head"><span class="tab on">JSON</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>{
+  <span style="color:#82aaff">"status"</span>: <span style="color:#c3e88d">true</span>,
+  <span style="color:#82aaff">"title"</span>: <span style="color:#f78c6c">"Rick Astley - Never Gonna Give You Up"</span>,
+  <span style="color:#82aaff">"duration"</span>: <span style="color:#f78c6c">213</span>,
+  <span style="color:#82aaff">"url"</span>: <span style="color:#f78c6c">"https://api.habi.my.id/api/file?id=..."</span>
+}</pre></div>
+
+        <h4 style="font-size:14px;margin:26px 0 8px">Gagal</h4>
+        <div class="code"><div class="code-head"><span class="tab on">JSON</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>{
+  <span style="color:#82aaff">"status"</span>: <span style="color:#f07178">false</span>,
+  <span style="color:#82aaff">"error"</span>: <span style="color:#f78c6c">"APIkey tidak valid. Daftar dulu: /api/register"</span>
+}</pre></div>
+      </section>
+
+      <!-- ERRORS -->
+      <section id="errors">
+        <h2>Kode Error</h2>
+        <div class="table-wrap">
+          <table>
+            <tr><th>HTTP</th><th>Makna</th><th>Solusi</th></tr>
+            <tr><td><code>400</code></td><td>Parameter tidak lengkap</td><td>Pastikan <code>url</code> dan <code>apikey</code> ada</td></tr>
+            <tr><td><code>401</code></td><td>API key tidak valid</td><td>Daftar ulang di <code>/api/register</code></td></tr>
+            <tr><td><code>429</code></td><td>Kuota habis</td><td>Tunggu reset harian atau upgrade</td></tr>
+            <tr><td><code>500</code></td><td>Gagal di sisi server</td><td>Coba lagi, cek URL yang dimasukkan</td></tr>
+            <tr><td><code>504</code></td><td>Timeout</td><td>Server sedang sibuk, coba lagi beberapa saat</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- ══════ DOWNLOADER ══════ -->
+      <h2 style="margin-top:56px;padding-top:34px;border-top:1px solid var(--border)">📥 Downloader</h2>
+
+      <div class="ep-block" id="ytmp3">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/ytmp3</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Download audio dari YouTube dalam format MP3 (128kbps).</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>url</code></td><td>string</td><td>Ya</td><td>Link YouTube</td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ytmp3?url=https://youtu.be/VIDEO_ID&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"source":"ytdlp","title":"...","duration":213,"size":3744669,"url":"https://.../api/file?id=..."}</code></div>
+      </div>
+
+      <div class="ep-block" id="ytmp4">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/ytmp4</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Download video YouTube dalam format MP4 (maks 720p, audio digabung otomatis).</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ytmp4?url=https://youtu.be/VIDEO_ID&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Catatan:</b> file video bisa berukuran besar, czas proses tergantung durasi dan kualitas sumber.</div>
+      </div>
+
+      <div class="ep-block" id="info">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/info</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ambil metadata video tanpa perlu mendownload. Cocok untuk preview atau cek judul.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/info?url=https://youtu.be/VIDEO_ID&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"title":"...","duration":213,"uploader":"...","views":1821691738,"thumb":"https://i.ytimg.com/..."}</code></div>
+      </div>
+
+      <div class="ep-block" id="direct">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/direct</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Download dari URL apa pun. Server mendeteksi platform secara otomatis.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>url</code></td><td>string</td><td>Ya</td><td>Link sumber</td></tr>
+            <tr><td><code>format</code></td><td>string</td><td>Tidak</td><td><code>mp3</code> atau <code>mp4</code>. Default: otomatis</td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/direct?url=https://youtu.be/VIDEO_ID&amp;format=mp3&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="tiktok">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/tiktok</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Download video TikTok. Server mengambil versi HD bila tersedia.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/tiktok?url=https://www.tiktok.com/@user/video/123&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="tiktok-audio">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/tiktok-audio</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ekstrak audio-only dari video TikTok.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/tiktok-audio?url=https://www.tiktok.com/@user/video/123&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="facebook">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/facebook</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Download video dari Facebook (post publik dan video Watch).</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/facebook?url=https://www.facebook.com/watch/?v=123&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Catatan:</b> video privat atau dari grup tertutup tidak bisa diakses.</div>
+      </div>
+
+      <div class="ep-block" id="instagram">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/instagram</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Download post, reels, atau carousel dari Instagram.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/instagram?url=https://www.instagram.com/p/ABC123&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Catatan:</b> akun privat butuh autentikasi cookie dan belum didukung. Konten publik yang bisa dibuka tanpa login akan berhasil.</div>
+      </div>
+
+      <div class="ep-block" id="file">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/file</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ambil file langsung dari URL hasil proses downloader. URL ini bertemporary.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -OJ "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/file?id=e39ba04d-Nama_Video.mp3"</pre></div>
+        <div class="res-note"><b>Catatan:</b> endpoint ini mengembalikan file biner, bukan JSON. Parameter <code>id</code> diambil dari field <code>url</code> di respons endpoint downloader.</div>
+      </div>
+
+      <!-- ══════ TOOLS ══════ -->
+      <h2 style="margin-top:56px;padding-top:34px;border-top:1px solid var(--border)">🧰 Tools</h2>
+
+      <div class="ep-block" id="ocr">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/ocr</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Baca dan ekstrak teks dari gambar (Optical Character Recognition).</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ocr?url=https://contoh.com/foto.jpg&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Catatan:</b> <code>url</code> harus menunjuk langsung ke file gambar yang bisa diakses publik.</div>
+      </div>
+
+      <div class="ep-block" id="translate">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/translate</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Terjemahkan teks ke bahasa lain, dengan deteksi bahasa sumber otomatis.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Teks yang mau diterjemahkan</td></tr>
+            <tr><td><code>to</code></td><td>string</td><td>Ya</td><td>Kode bahasa tujuan, misal <code>id</code>, <code>en</code>, <code>ja</code></td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/translate?text=hello&amp;to=id&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"text":"Halo","from":"en","correction":null}</code></div>
+      </div>
+
+      <div class="ep-block" id="tts">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/tts</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ubah teks menjadi file audio MP3 (text-to-speech).</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Teks yang mau diubah jadi suara</td></tr>
+            <tr><td><code>to</code></td><td>string</td><td>Tidak</td><td>Kode bahasa. Default <code>id</code></td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o suara.mp3 "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/tts?text=Halo+dunia&amp;to=id&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="ssweb">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/ssweb</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ambil screenshot website dalam format PNG. Cocok untuk preview halaman.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o ss.png "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/ssweb?url=https://example.com&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Catatan:</b> endpoint ini mengembalikan gambar PNG langsung, bukan JSON.</div>
+      </div>
+
+      <div class="ep-block" id="webfetch">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/webfetch</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ambil isi teks bersih dari sebuah halaman web. Berguna untuk scraping ringan.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/webfetch?url=https://example.com&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"title":"Example Domain","text":"Example Domain...","length":713}</code></div>
+      </div>
+
+      <div class="ep-block" id="lirik">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/lirik</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Cari lirik lagu berdasarkan judul atau pengiring.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/lirik?q=过头&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="phonespecs">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/phonespecs</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ambil spesifikasi lengkap sebuah smartphone.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/phonespecs?q=iphone+15+pro&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"name":"iPhone 15 Pro","specs":"• Chipset: ...\n• Baterai: ...","url":"..."}</code></div>
+      </div>
+
+      <div class="ep-block" id="phonecompare">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/phonecompare</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Bandingkan spesifikasi dua smartphone sekaligus.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>a</code></td><td>string</td><td>Ya</td><td>HP pertama</td></tr>
+            <tr><td><code>b</code></td><td>string</td><td>Ya</td><td>HP kedua</td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/phonecompare?a=iphone+15&amp;b=samsung+s24&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="removebg">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/removebg</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Hapus background foto otomatis, hasilnya transparan (PNG).</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o result.png "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/removebg?url=https://contoh.com/foto.jpg&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+      <div class="ep-block" id="pdfcompress">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/pdfcompress</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Kompres file PDF agar ukurannya lebih kecil.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o kecil.pdf "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/pdfcompress?url=https://contoh.com/file.pdf&amp;apikey=API_KEY"</pre></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="brand"><span class="brand-mark">H</span><span>HABI API</span></a>
+    <div class="foot-links">
+      <a href="/">Beranda</a>
+      <a href="/pricing">Harga</a>
+      <a data-cfg="wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border)">
+    <p style="text-align:center;color:#5a6480;font-size:12.5px">© <span id="year">2026</span> HABI API — Dokumentasi</p>
+  </div>
+</footer>
+
+<script src="/assets/app.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear()</script>
+</body>
+</html>
