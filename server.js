@@ -10,6 +10,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Readable } from 'node:stream'
 import * as downloader from './api/downloader.mjs'
+import * as imageTools from './api/image-tools.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PUBLIC_DIR = path.join(__dirname, 'public')
@@ -124,6 +125,123 @@ native('/api/ytthumb', (req) => {
 
 // Spotify → cari di YouTube Music (Spotify DRM, jadi di-bypass)
 native('/api/spotify', (req) => downloader.spotifyToYoutube(need(req, 'url')))
+
+/* ---------------------------------------------------------
+ * Image tools — semua digambar di server (self-hosted)
+ * Mengembalikan file PNG/MP4 langsung.
+ * ------------------------------------------------------- */
+
+/** Kirim buffer gambar sebagai response */
+function sendImage(res, buf, { ext = 'png', filename = null, download = false } = {}) {
+  const mime = ext === 'mp4' ? 'video/mp4'
+    : ext === 'webm' ? 'video/webm'
+    : ext === 'jpeg' || ext === 'jpg' ? 'image/jpeg'
+    : 'image/png'
+  res.setHeader('Content-Type', mime)
+  if (filename) {
+    const disposition = download ? 'attachment' : 'inline'
+    res.setHeader('Content-Disposition', `${disposition}; filename="${filename.replace(/[^\w.\-]/g, '_')}"`)
+  }
+  res.setHeader('Cache-Control', 'public, max-age=3600')
+  return res.send(buf)
+}
+
+const BOOLS = (v, def = true) => {
+  if (v === undefined) return def
+  return !/^(0|false|no|off)$/i.test(String(v))
+}
+
+app.get('/api/brat', async (req, res) => {
+  const started = Date.now()
+  try {
+    const buf = await imageTools.brat(need(req, 'text'), { blur: req.query.blur })
+    sendImage(res, buf, { filename: 'brat.png', download: BOOLS(req.query.download, false) })
+    if (process.env.LOG_NATIVE === '1') console.log(`  \x1b[36m⏱\x1b[0m  /api/brat → ${Date.now() - started}ms`)
+  } catch (err) {
+    console.error(`  \x1b[31m✗\x1b[0m  /api/brat: ${err.message}`)
+    res.status(400).json({ status: false, error: err.message })
+  }
+})
+
+app.get('/api/bratvid', async (req, res) => {
+  const started = Date.now()
+  try {
+    const format = req.query.format === 'webm' ? 'webm' : 'mp4'
+    const buf = await imageTools.bratVideo(need(req, 'text'), {
+      format, fps: req.query.fps, width: req.query.width,
+      height: req.query.height, duration: req.query.duration,
+    })
+    sendImage(res, buf, { ext: format, filename: `brat.${format}`, download: BOOLS(req.query.download, true) })
+    if (process.env.LOG_NATIVE === '1') console.log(`  \x1b[36m⏱\x1b[0m  /api/bratvid → ${Date.now() - started}ms`)
+  } catch (err) {
+    console.error(`  \x1b[31m✗\x1b[0m  /api/bratvid: ${err.message}`)
+    res.status(400).json({ status: false, error: err.message })
+  }
+})
+
+app.get('/api/iqc', async (req, res) => {
+  const started = Date.now()
+  try {
+    const batteries = req.query.batteries
+      ? String(req.query.batteries).split(',').map((s) => s.trim())
+      : [true, '87%']
+    const buf = await imageTools.iphoneQuote({
+      text: need(req, 'text'),
+      time: req.query.time || '09.41',
+      batteries,
+      operator: BOOLS(req.query.operator, true),
+      timebar: BOOLS(req.query.timebar, true),
+      wifi: BOOLS(req.query.wifi, true),
+      avatar: req.query.avatar || null,
+    })
+    sendImage(res, buf, { filename: 'iqc.png', download: BOOLS(req.query.download, false) })
+    if (process.env.LOG_NATIVE === '1') console.log(`  \x1b[36m⏱\x1b[0m  /api/iqc → ${Date.now() - started}ms`)
+  } catch (err) {
+    console.error(`  \x1b[31m✗\x1b[0m  /api/iqc: ${err.message}`)
+    res.status(400).json({ status: false, error: err.message })
+  }
+})
+
+app.get('/api/meme', async (req, res) => {
+  const started = Date.now()
+  try {
+    const buf = await imageTools.meme({
+      image: req.query.image || req.query.url || null,
+      top: req.query.top || '',
+      bottom: req.query.bottom || '',
+      author: req.query.author || '',
+    })
+    sendImage(res, buf, { filename: 'meme.png', download: BOOLS(req.query.download, false) })
+    if (process.env.LOG_NATIVE === '1') console.log(`  \x1b[36m⏱\x1b[0m  /api/meme → ${Date.now() - started}ms`)
+  } catch (err) {
+    console.error(`  \x1b[31m✗\x1b[0m  /api/meme: ${err.message}`)
+    res.status(400).json({ status: false, error: err.message })
+  }
+})
+
+app.get('/api/watermark', async (req, res) => {
+  const started = Date.now()
+  try {
+    const buf = await imageTools.watermark({
+      image: need(req, 'image'),
+      text: req.query.text || 'HABI API',
+      position: req.query.position || 'br',
+      opacity: req.query.opacity,
+    })
+    sendImage(res, buf, { filename: 'watermark.png', download: BOOLS(req.query.download, false) })
+    if (process.env.LOG_NATIVE === '1') console.log(`  \x1b[36m⏱\x1b[0m  /api/watermark → ${Date.now() - started}ms`)
+  } catch (err) {
+    console.error(`  \x1b[31m✗\x1b[0m  /api/watermark: ${err.message}`)
+    res.status(400).json({ status: false, error: err.message })
+  }
+})
+
+// Humanizer mengembalikan JSON, bukan gambar
+native('/api/humanizer', (req) =>
+  imageTools.humanize(need(req, 'text'), {
+    mode: req.query.mode === 'en' ? 'en' : 'indo',
+  })
+)
 
 /* ---------------------------------------------------------
  * Proxy ke backend API
