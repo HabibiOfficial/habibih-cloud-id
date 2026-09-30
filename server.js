@@ -378,6 +378,29 @@ secured('/api/detect', (req) => {
 })
 
 /* ---------------------------------------------------------
+ * Perbaikan endpoint yang rusak di backend
+ * ------------------------------------------------------- */
+
+// /api/file tidak pernah ada di backend (selalu 404). Diganti
+// dengan versi native: unduh file apa pun, ada guard SSRF.
+secured('/api/file', async (req, res) => {
+  const source = need(req, 'url')
+  const { buffer, contentType, filename } = await studioTools.fetchBinary(source)
+  res.setHeader('Content-Type', contentType)
+  res.setHeader('Content-Length', buffer.length)
+  res.setHeader('Content-Disposition', `attachment; filename="${filename.replace(/[^\w.\-]/g, '_')}"`)
+  res.setHeader('Cache-Control', 'public, max-age=600')
+  return res.send(buffer)
+})
+
+// /api/instagram di backend selalu 500 (yt-dlp butuh cookie).
+// Sekarang ditangani native agar bisa dikasih cookie lewat env
+// dan pesan errornya jelas.
+secured('/api/instagram', (req) =>
+  mediaTools.resolveMedia(need(req, 'url'), { wantAudio: BOOLS(req.query.audio, false) })
+)
+
+/* ---------------------------------------------------------
  * Studio — sticker, welcome, fake reply
  * Semua punya guard SSRF + batas ukuran gambar.
  * ------------------------------------------------------- */
