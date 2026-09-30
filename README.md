@@ -24,13 +24,17 @@ Landing page + dokumentasi interaktif + reverse proxy ke backend REST API.
 | | Fitur |
 |---|---|
 | 🎨 | **Landing page modern** — dark theme, gradient, animasi halus |
-| 📖 | **Dokumentasi lengkap** — 19 endpoint, parameter, contoh respons |
+| 📖 | **Dokumentasi lengkap** — 35 endpoint, parameter, contoh respons |
 | 💰 | **Halaman harga** — 3 paket + tabel perbandingan |
 | 🧪 | **Playground** — tester endpoint langsung dari browser |
 | 🔑 | **Registrasi API key** — form built-in, key tersimpan lokal |
 | 🔁 | **Reverse proxy** — meneruskan `/api/*` ke backend |
 | 📦 | **Stream biner** — mp3/mp4/png dikirim langsung, bukan di-buffer |
 | 🩺 | **Health check** — `GET /healthz` untuk monitoring |
+| 🛡️ | **API key wajib** — semua endpoint divalidasi ke backend, cache 5 menit |
+| 🛡️ | **Anti-SSRF** — alamat internal & network lokal otomatis ditolak |
+| 🧪 | **Smoke test** — `npm run smoke` cek 29 hal sekaligus |
+| 🔍 | **Audit** — `npm run audit` cek 35 endpoint, mana yang hidup |
 | ⚙️ | **Config dinamis** — contoh kode ikut domain yang sedang dibuka |
 
 ---
@@ -39,9 +43,15 @@ Landing page + dokumentasi interaktif + reverse proxy ke backend REST API.
 
 ```
 habi-api-web/
-├── server.js              # Express + reverse proxy
+├── server.js              # Express + auth + route + reverse proxy
+├── ecosystem.config.cjs   # Konfigurasi PM2
 ├── package.json
 ├── .env.example           # Contoh konfigurasi
+├── api/
+│   ├── downloader.mjs     # yt-dlp: search, metadata, spotify→youtube
+│   ├── image-tools.mjs    # brat, bratvid, iqc, meme, watermark, humanizer
+│   ├── media.mjs          # resolver TikTok/FB/IG/X + deteksi platform
+│   └── studio.mjs         # sticker, welcome, fake reply + guard SSRF
 ├── public/
 │   ├── index.html         # Landing page
 │   ├── docs.html          # Dokumentasi API
@@ -53,9 +63,73 @@ habi-api-web/
 │   ├── nginx.conf         # Konfigurasi reverse proxy Nginx
 │   └── cloudflared-*.yml  # Konfigurasi Cloudflare Tunnel
 └── scripts/
-    ├── setup-vps.sh       # Setup awal VPS Ubuntu
-    └── deploy.sh          # Deploy/update aplikasi
+    ├── setup-vps.sh         # Setup awal VPS Ubuntu
+    ├── deploy.sh            # Deploy/update aplikasi
+    ├── smoke-test.mjs       # npm run smoke
+    └── audit-endpoints.mjs  # npm run audit
 ```
+
+---
+
+## 🎯 Endpoint (35)
+
+<details>
+<summary><b>Image Tools</b> — digambar di server, tanpa layanan luar</summary>
+
+| Endpoint | Keluaran |
+|---|---|
+| `/api/brat` | gambar brat dari teks |
+| `/api/bratvid` | brat jadi video MP4 |
+| `/api/iqc` | screenshot chat iPhone (bawa context menu) |
+| `/api/meme` | meme teks atas & bawah |
+| `/api/watermark` | watermark di foto |
+| `/api/humanizer` | tulis ulang teks kaku ala AI (aturan, bukan LLM) |
+
+</details>
+
+<details>
+<summary><b>Downloader native</b> — yt-dlp milik sendiri</summary>
+
+| Endpoint | Keluaran |
+|---|---|
+| `/api/ytsearch` | cari video YouTube |
+| `/api/ytinfo` | metadata video |
+| `/api/ytthumb` | URL thumbnail 3 resolusi |
+| `/api/spotify` | Spotify → kandidat YouTube (oEmbed resmi) |
+| `/api/resolve` | URL media TikTok/FB/IG/X + metadata (JSON) |
+| `/api/detect` | deteksi platform dari URL |
+| `/api/file` | unduh file apa pun (ada guard SSRF) |
+| `/api/instagram` | post/reel Instagram (butuh cookie di server) |
+
+</details>
+
+<details>
+<summary><b>Studio</b> — port dari bot WhatsApp HABI</summary>
+
+| Endpoint | Keluaran |
+|---|---|
+| `/api/sticker` | stiker WhatsApp WebP 512×512 |
+| `/api/welcome` | kartu sambutan member grup 1000×460 |
+| `/api/reply` | fake balasan chat, 5 varian |
+| `/api/reply/variants` | daftar varian |
+
+</details>
+
+> Sisanya (ytmp3, ytmp4, info, direct, tiktok, tiktok-audio, facebook, file,
+> ocr, translate, tts, ssweb, webfetch, lirik, phonespecs, phonecompare,
+> removebg, pdfcompress) diteruskan ke backend.
+
+---
+
+## 🧪 Mengecek server
+
+```bash
+npm run smoke    # 29 pemeriksaan: status, content-type, auth, SSRF
+npm run audit    # 35 endpoint: mana hidup, mana error, berapa lama
+```
+
+Keluarannya pakai warna, dan exit code `1` kalau ada yang gagal —
+jadi bisa dipakai sebagai gerbang di CI/CD.
 
 ---
 
