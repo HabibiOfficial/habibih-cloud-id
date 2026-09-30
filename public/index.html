@@ -6,7 +6,7 @@
 <title>HABI API — Downloader & Tools REST API</title>
 <meta name="description" content="REST API gratis untuk download YouTube, TikTok, Instagram, Facebook, plus tools: OCR, translate, TTS, screenshot, dan lainnya. Didukung API key & rate limit.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
-<link rel="stylesheet" href="/assets/style.css?v=20261001c">
+<link rel="stylesheet" href="/assets/style.css?v=20261001e">
 </head>
 <body>
 
@@ -268,11 +268,22 @@ $data = <span style="color:#82aaff">json_decode</span>(<span style="color:#82aaf
               <option value="/api/lirik" data-param="q">/api/lirik</option>
               <option value="/api/phonespecs" data-param="q">/api/phonespecs</option>
             </optgroup>
+            <optgroup label="Studio 🆕">
+              <option value="/api/resolve" data-param="url">/api/resolve</option>
+              <option value="/api/detect" data-param="url">/api/detect</option>
+              <option value="/api/sticker" data-param="image">/api/sticker</option>
+              <option value="/api/welcome" data-param="name" data-extra="&amp;group=Grup+WhatsApp&amp;accent=green">/api/welcome</option>
+              <option value="/api/reply" data-param="text" data-extra="&amp;variant=1&amp;name=HABI+Official">/api/reply</option>
+              <option value="/api/ytsearch" data-param="q">/api/ytsearch</option>
+              <option value="/api/ytinfo" data-param="url">/api/ytinfo</option>
+              <option value="/api/spotify" data-param="url">/api/spotify</option>
+              <option value="/api/iqc" data-param="text" data-extra="&amp;time=09.41">/api/iqc</option>
+            </optgroup>
           </select>
           <input class="field" id="t-input" placeholder="https://..." autocomplete="off">
         </div>
         <div class="tester-row">
-          <input class="field" id="t-key" placeholder="API Key kamu (opsional untuk test)" autocomplete="off" style="font-family:var(--mono)">
+          <input class="field" id="t-key" placeholder="API Key kamu (wajib)" autocomplete="off" style="font-family:var(--mono)">
           <button type="submit" class="btn btn-primary" style="padding:11px 26px">Kirim →</button>
         </div>
       </form>
@@ -424,7 +435,7 @@ $data = <span style="color:#82aaff">json_decode</span>(<span style="color:#82aaf
   </div>
 </footer>
 
-<script src="/assets/app.js?v=20261001c"></script>
+<script src="/assets/app.js?v=20261001e"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear()</script>
 </body>
 </html>
