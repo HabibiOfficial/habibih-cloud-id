@@ -40,7 +40,7 @@ const EP = [
   ['/api/tts', '/api/tts?text=halo+dunia', 1],
   ['/api/ssweb', '/api/ssweb?url=https://example.com', 1],
   ['/api/webfetch', '/api/webfetch?url=https://example.com', 1],
-  ['/api/lirik', '/api/lirik?q=Indonesia+Raya', 1],,
+  ['/api/lirik', '/api/lirik?q=Indonesia+Raya', 1],
   ['/api/phonespecs', '/api/phonespecs?q=iPhone+15+Pro', 1],
   ['/api/phonecompare', '/api/phonecompare?a=iPhone+15+Pro&b=Samsung+S23', 1],
   ['/api/removebg', `/api/removebg?url=${IMG}`, 1],
