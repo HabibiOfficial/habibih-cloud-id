@@ -32,7 +32,9 @@ app.use(express.json({ limit: '1mb' }))
 // Kalau tidak, pakai origin dari request — otomatis benar di preview & di produksi.
 function publicUrl(req) {
   if (process.env.SITE_PUBLIC_URL) return process.env.SITE_PUBLIC_URL.replace(/\/+$/, '')
-  const proto = req.get('x-forwarded-proto') || req.protocol
+  // Cloudflare/Nginx bisa mengirim beberapa header beruntun, ambil yang pertama
+  const protoRaw = req.get('x-forwarded-proto') || req.protocol || 'http'
+  const proto = String(protoRaw).split(',')[0].trim()
   return `${proto}://${req.get('host')}`
 }
 
