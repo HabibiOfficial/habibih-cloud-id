@@ -1,0 +1,15 @@
+# Cloudflare Tunnel — Habibih Cloud ID
+tunnel: habi-api
+credentials-file: /etc/cloudflared/habi-api.json
+
+ingress:
+  - hostname: api.habibicloudserver.dpdns.org
+    service: http://127.0.0.1:8080
+    originRequest:
+      connectTimeout: 30s
+      noTLSVerify: true
+  - service: http_status:404
+
+# Retry otomatis kalau koneksi ke Cloudflare putus
+warp-routing:
+  enabled: false
