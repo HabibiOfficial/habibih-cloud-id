@@ -124,6 +124,13 @@ function initTester() {
     '/api/webfetch': 'https://example.com',
     '/api/lirik': '-judul lagu',
     '/api/phonespecs': 'iPhone 15 Pro',
+    '/api/resolve': 'https://www.tiktok.com/@user/video/...',
+    '/api/detect': 'https://vm.tiktok.com/XXXX/',
+    '/api/sticker': 'https://contoh.com/foto.jpg',
+    '/api/ytsearch': 'rizky janaka',
+    '/api/ytinfo': 'https://youtu.be/VIDEO_ID',
+    '/api/spotify': 'https://open.spotify.com/track/ID',
+    '/api/reply': 'Halo dari HABI',
   }
   const updateHint = () => {
     input.placeholder = HINTS[sel.value] || 'https://...'
