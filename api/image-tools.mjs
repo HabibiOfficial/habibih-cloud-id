@@ -10,6 +10,7 @@
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { fetchImage } from './studio.mjs'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -201,12 +202,8 @@ export async function meme({ image, top = '', bottom = '', author = '' } = {}) {
   // 1) siapkan gambar (dari URL atau base64)
   let img
   if (image && /^https?:\/\//i.test(image)) {
-    const res = await fetch(image, { signal: AbortSignal.timeout(20000) })
-    if (!res.ok) throw new Error(`Gagal mengunduh gambar (HTTP ${res.status}).`)
-    const type = res.headers.get('content-type') || ''
-    if (!type.startsWith('image/')) throw new Error('URL tersebut bukan gambar.')
-    const ab = await res.arrayBuffer()
-    img = await loadImage(Buffer.from(ab))
+    // Lewat fetchImage() → ada guard anti-SSRF + batas ukuran
+    img = await loadImage(await fetchImage(image))
   } else if (image) {
     const raw = String(image).replace(/^data:image\/\w+;base64,/, '')
     img = await loadImage(Buffer.from(raw, 'base64'))
@@ -331,9 +328,8 @@ export async function watermark({ image, text = 'HABI API', position = 'br', opa
 
   let img
   if (/^https?:\/\//i.test(image)) {
-    const res = await fetch(image, { signal: AbortSignal.timeout(20000) })
-    if (!res.ok) throw new Error(`Gagal mengunduh gambar (HTTP ${res.status}).`)
-    img = await loadImage(Buffer.from(await res.arrayBuffer()))
+    // Lewat fetchImage() → ada guard anti-SSRF + batas ukuran
+    img = await loadImage(await fetchImage(image))
   } else {
     img = await loadImage(Buffer.from(String(image).replace(/^data:image\/\w+;base64,/, ''), 'base64'))
   }
