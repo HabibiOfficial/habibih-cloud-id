@@ -1,0 +1,26 @@
+{
+  "name": "habi-api-web",
+  "version": "1.0.0",
+  "description": "HABI API — Website & Documentation portal untuk REST API downloader + tools suite.",
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "downloader",
+    "habi",
+    "documentation"
+  ],
+  "author": "Habibih Cloud Official ID",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
