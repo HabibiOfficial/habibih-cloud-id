@@ -21,6 +21,9 @@
   "author": "Habibih Cloud Official ID",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.2"
+    "@napi-rs/canvas": "^0.1.88",
+    "brat-canvas": "^1.0.30",
+    "express": "^4.21.2",
+    "iqc-canvas": "^1.0.37"
   }
 }
