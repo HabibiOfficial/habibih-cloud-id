@@ -59,6 +59,13 @@
       <a href="#auth">Autentikasi</a>
       <a href="#response">Format Respons</a>
       <a href="#errors">Kode Error</a>
+      <h5>Image · Native</h5>
+      <a href="#brat">/api/brat</a>
+      <a href="#bratvid">/api/bratvid</a>
+      <a href="#iqc">/api/iqc</a>
+      <a href="#meme">/api/meme</a>
+      <a href="#watermark">/api/watermark</a>
+      <a href="#humanizer">/api/humanizer</a>
       <h5>Downloader · Native</h5>
       <a href="#ytsearch">/api/ytsearch</a>
       <a href="#ytinfo">/api/ytinfo</a>
@@ -167,9 +174,114 @@
         </div>
       </section>
 
+      <!-- ══════ IMAGE NATIVE ══════ -->
+      <h2 style="margin-top:56px;padding-top:34px;border-top:1px solid var(--border)">🎨 Image Tools</h2>
+      <p class="desc">Semua gambar digambar langsung di server kami memakai <code>@napi-rs/canvas</code>. Tidak ada permintaan ke layanan eksternal, jadi selalu tersedia dan gratis.</p>
+
+      <div class="ep-block" id="brat">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/brat</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Buat gambar brat (meme hijau ikonik) dari teks. Mendukung emoji.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Teks pada gambar. Maks 200 karakter</td></tr>
+            <tr><td><code>blur</code></td><td>number</td><td>Tidak</td><td>Nilai blur. Default 0</td></tr>
+            <tr><td><code>download</code></td><td>boolean</td><td>Tidak</td><td><code>1</code> untuk paksa unduh</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/brat?text=Halo+HABI+API" -o brat.png</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG 500×500 pixels.</div>
+      </div>
+
+      <div class="ep-block" id="bratvid">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/bratvid</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Buat video MP4 dari teks brat. Dihasilkan di server memakai ffmpeg.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Teks pada video. Maks 120 karakter</td></tr>
+            <tr><td><code>format</code></td><td>string</td><td>Tidak</td><td><code>mp4</code> (default) atau <code>webm</code></td></tr>
+            <tr><td><code>duration</code></td><td>number</td><td>Tidak</td><td>Durasi detik. Default 2, maks 10</td></tr>
+            <tr><td><code>fps</code></td><td>number</td><td>Tidak</td><td>Frame per detik. Default 15</td></tr>
+            <tr><td><code>width</code> / <code>height</code></td><td>number</td><td>Tidak</td><td>Ukuran. Default 500×500</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/bratvid?text=Halo&amp;duration=2" -o brat.mp4</pre></div>
+        <div class="res-note"><b>Output:</b> file MP4. Render butuh 1–3 detik.</div>
+      </div>
+
+      <div class="ep-block" id="iqc">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/iqc</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Buat screenshot chat iPhone (iPhone Quote). Cocok untuk pesan lucu atauPLSQUO.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Isi pesan. Mendukung baris baru dan emoji</td></tr>
+            <tr><td><code>time</code></td><td>string</td><td>Tidak</td><td>Jam pada status bar. Default <code>09.41</code></td></tr>
+            <tr><td><code>batteries</code></td><td>string</td><td>Tidak</td><td>Level baterai, mis <code>87%</code></td></tr>
+            <tr><td><code>operator</code> / <code>timebar</code> / <code>wifi</code></td><td>boolean</td><td>Tidak</td><td>Tampilkan elemen tersebut</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Selamat+datang&amp;time=09.41" -o chat.png</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG 680 px lebar. Menu konteks otomatis dihapus supaya hasilnya bersih.</div>
+      </div>
+
+      <div class="ep-block" id="meme">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/meme</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Buat meme dengan teks atas dan bawah. Cocok untuk gambar yang sudah kamu punya.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>image</code></td><td>string</td><td>Tidak</td><td>URL atau base64 gambar. Kosongkan untuk canvas default</td></tr>
+            <tr><td><code>top</code></td><td>string</td><td>Tidak</td><td>Teks bagian atas (otomatis jadi huruf besar)</td></tr>
+            <tr><td><code>bottom</code></td><td>string</td><td>Tidak</td><td>Teks bagian bawah</td></tr>
+            <tr><td><code>author</code></td><td>string</td><td>Tidak</td><td>Watermark kecil di kanan bawah</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/meme?image=https://contoh.com/foto.jpg&amp;top=HABI+API&amp;bottom=self-hosted&amp;author=habibih" -o meme.png</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG. Teks otomatis membungkus dan diberi outline hitam agar terbaca.</div>
+      </div>
+
+      <div class="ep-block" id="watermark">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/watermark</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Tambahkan teks watermark ke gambar. Posisi dan opacity bisa diatur.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>image</code></td><td>string</td><td>Ya</td><td>URL atau base64 gambar</td></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Tidak</td><td>Teks watermark. Default <code>HABI API</code></td></tr>
+            <tr><td><code>position</code></td><td>string</td><td>Tidak</td><td><code>br</code> (default), <code>bl</code>, <code>tr</code>, <code>tl</code></td></tr>
+            <tr><td><code>opacity</code></td><td>number</td><td>Tidak</td><td>0.1–1. Default 0.75</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/watermark?image=https://contoh.com/foto.jpg&amp;text=@akun&amp;position=br" -o wm.png</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG dengan ukuran gambar asli (maks 2000 px).</div>
+      </div>
+
+      <div class="ep-block" id="humanizer">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/humanizer</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ubah teks yang terlalu kaku ala AI menjadi lebih natural. Berbasis aturan, jalan offline — tidak memanggil LLM.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Ya</td><td>Teks yang akan ditulis ulang. Maks 20.000 karakter</td></tr>
+            <tr><td><code>mode</code></td><td>string</td><td>Tidak</td><td><code>indo</code> (default) atau <code>en</code></td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -G "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/humanizer" --data-urlencode "text=It is important to note that..."</pre></div>
+        <div class="res-note"><b>Contoh perubahan:</b> <code>It is important to note that</code> → <code>Perlu dicatat bahwa</code>, <code>Furthermore</code> → <code>Selain itu</code>, <code>utilize</code> → <code>pakai</code></div>
+        <div class="res-note"><b>Catatan:</b> ini bukan AI generatif. Hanya mengganti pola kata dan frasa kaku yang umum dipakai model bahasa.</div>
+      </div>
+
       <!-- ══════ NATIVE ══════ -->
       <h2 style="margin-top:56px;padding-top:34px;border-top:1px solid var(--border)">⚡ Endpoint Native</h2>
-      <p class="desc">Endpoint berikut dijalankan langsung di server kami memakai <code>yt-dlp</code> — tidak lewat backend, tidak bergantung layanan pihak ketiga.</p>
+      <p class="desc">Endpoint downloader berikut dijalankan langsung di server kami memakai <code>yt-dlp</code> — tidak lewat backend, tidak bergantung layanan pihak ketiga.</p>
 
       <div class="ep-block" id="ytsearch">
         <div class="ep-head"><span class="method">GET</span><h3>/api/ytsearch</h3><span class="badge free">Gratis</span></div>
