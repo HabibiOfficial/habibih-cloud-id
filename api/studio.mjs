@@ -29,6 +29,7 @@ function load(name) {
 
 const canvasLib = () => load('@napi-rs/canvas')
 const MAX_IMAGE_BYTES = Number(process.env.MAX_IMAGE_BYTES) || 8 * 1024 * 1024
+const MAX_BINARY_BYTES = Number(process.env.MAX_BINARY_BYTES) || 50 * 1024 * 1024
 const FETCH_TIMEOUT = Number(process.env.IMAGE_FETCH_TIMEOUT_MS) || 15000
 
 /* =========================================================
@@ -111,6 +112,17 @@ export async function assertSafeUrl(inputUrl) {
  * @returns {Promise<Buffer>}
  */
 export async function fetchImage(rawUrl) {
+  const { buffer } = await fetchBinary(rawUrl, { maxBytes: MAX_IMAGE_BYTES })
+  return buffer
+}
+
+/**
+ * Ambil file apa pun (bukan cuma gambar) dari URL.
+ * Sama seperti fetchImage, tapi batas ukuran lebih besar dan
+ * tidak installment content-type.
+ * @returns {Promise<{buffer: Buffer, contentType: string, filename: string}>}
+ */
+export async function fetchBinary(rawUrl, { maxBytes = MAX_BINARY_BYTES } = {}) {
   const url = await assertSafeUrl(rawUrl)
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT)
@@ -124,8 +136,8 @@ export async function fetchImage(rawUrl) {
 
     // Hentikan sedini mungkin kalau server sudah bilang terlalu besar
     const declared = Number(res.headers.get('content-length') || 0)
-    if (declared && declared > MAX_IMAGE_BYTES) {
-      throw new Error(`Gambar terlalu besar (${(declared / 1048576).toFixed(1)} MB). Maks ${MAX_IMAGE_BYTES / 1048576} MB.`)
+    if (declared && declared > maxBytes) {
+      throw new Error(`File terlalu besar (${(declared / 1048576).toFixed(1)} MB). Maks ${maxBytes / 1048576} MB.`)
     }
 
     const reader = res.body?.getReader()
@@ -137,14 +149,17 @@ export async function fetchImage(rawUrl) {
       const { done, value } = await reader.read()
       if (done) break
       total += value.length
-      if (total > MAX_IMAGE_BYTES) {
+      if (total > maxBytes) {
         try { await reader.cancel() } catch { /* abaikan */ }
-        throw new Error(`Gambar terlalu besar. Maks ${MAX_IMAGE_BYTES / 1048576} MB.`)
+        throw new Error(`File terlalu besar. Maks ${maxBytes / 1048576} MB.`)
       }
       chunks.push(Buffer.from(value))
     }
-    if (!total) throw new Error('Gambar kosong.')
-    return Buffer.concat(chunks)
+    if (!total) throw new Error('File kosong.')
+
+    const type = res.headers.get('content-type') || 'application/octet-stream'
+    const name = decodeURIComponent(url.pathname.split('/').pop() || '').slice(0, 80) || 'file'
+    return { buffer: Buffer.concat(chunks), contentType: type.split(';')[0].trim(), filename: name }
   } catch (err) {
     if (err?.name === 'AbortError') throw new Error('Request ke server gambar timeout.')
     throw err
@@ -798,6 +813,7 @@ export default {
   welcomeCard,
   fakeReply,
   fetchImage,
+  fetchBinary,
   assertSafeUrl,
   UrlRejectedError,
   REPLY_VARIANTS,
