@@ -193,6 +193,7 @@ app.get('/api/iqc', async (req, res) => {
       timebar: BOOLS(req.query.timebar, true),
       wifi: BOOLS(req.query.wifi, true),
       avatar: req.query.avatar || null,
+      menu: BOOLS(req.query.menu, true),
     })
     sendImage(res, buf, { filename: 'iqc.png', download: BOOLS(req.query.download, false) })
     if (process.env.LOG_NATIVE === '1') console.log(`  \x1b[36m⏱\x1b[0m  /api/iqc → ${Date.now() - started}ms`)
