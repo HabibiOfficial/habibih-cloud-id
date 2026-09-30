@@ -6,7 +6,7 @@
 <title>Dokumentasi — HABI API</title>
 <meta name="description" content="Dokumentasi lengkap HABI API: downloader YouTube, TikTok, Instagram, Facebook, dan tools OCR, translate, TTS, screenshot.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
-<link rel="stylesheet" href="/assets/style.css?v=20261001e">
+<link rel="stylesheet" href="/assets/style.css?v=20261001f">
 <style>
   .doc-layout { display: grid; grid-template-columns: 236px 1fr; gap: 44px; align-items: start; }
   .doc-side { position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 8px; }
@@ -429,18 +429,34 @@ curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&a
 
       <div class="ep-block" id="instagram">
         <div class="ep-head"><span class="method">GET</span><h3>/api/instagram</h3><span class="badge free">Gratis</span></div>
-        <p class="desc">Download post, reels, atau carousel dari Instagram.</p>
+        <p class="desc">Ambil URL media dari post, reel, atau reels Instagram. Mengembalikan JSON berisi judul, durasi, dan link video/foto.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>url</code></td><td>string</td><td>Ya</td><td>Link post/reel Instagram</td></tr>
+            <tr><td><code>audio</code></td><td>boolean</td><td>Tidak</td><td><code>true</code> = ambil stream audio saja</td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
         <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
-        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/instagram?url=https://www.instagram.com/p/ABC123&amp;apikey=API_KEY"</pre></div>
-        <div class="res-note"><b>Catatan:</b> akun privat butuh autentikasi cookie dan belum didukung. Konten publik yang bisa dibuka tanpa login akan berhasil.</div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/instagram?url=https://www.instagram.com/p/POST_ID&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Catatan penting:</b> Instagram memblokir request tanpa login. Kalau dapat error <code>ditolak tanpa cookie</code>, berarti owner belum memasang cookie di server —Artinya endpoint-nya hidup tapi butuh konfigurasi di sisi server, bukan salah parameter.</div>
       </div>
 
       <div class="ep-block" id="file">
         <div class="ep-head"><span class="method">GET</span><h3>/api/file</h3><span class="badge free">Gratis</span></div>
-        <p class="desc">Ambil file langsung dari URL hasil proses downloader. URL ini bertemporary.</p>
+        <p class="desc">Unduh file apa pun dari sebuah URL dan kirim balik sebagai attachment. Dilayani langsung oleh server kami, dengan proteksi SSRF dan batas ukuran 50 MB.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>url</code></td><td>string</td><td>Ya</td><td>URL file sumber. Hanya <code>http</code>/<code>https</code></td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
         <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
-        <pre>curl -OJ "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/file?id=e39ba04d-Nama_Video.mp3"</pre></div>
-        <div class="res-note"><b>Catatan:</b> endpoint ini mengembalikan file biner, bukan JSON. Parameter <code>id</code> diambil dari field <code>url</code> di respons endpoint downloader.</div>
+        <pre>curl -OJ "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/file?url=https://contoh.com/file.pdf&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Output:</b> file biner asli dengan <code>Content-Disposition: attachment</code>, jadi langsung tersimpan dengan nama aslinya.</div>
+        <div class="res-note"><b>Keamanan:</b> alamat internal (localhost, 10.x, 192.168.x, 169.254.x) otomatis ditolak. File lebih dari 50 MB ditolak.</div>
       </div>
 
       <!-- ══════ TOOLS ══════ -->
@@ -503,9 +519,23 @@ curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&a
 
       <div class="ep-block" id="lirik">
         <div class="ep-head"><span class="method">GET</span><h3>/api/lirik</h3><span class="badge free">Gratis</span></div>
-        <p class="desc">Cari lirik lagu berdasarkan judul atau pengiring.</p>
+        <p class="desc">Cari lirik lagu berdasarkan judulnya.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>q</code></td><td>string</td><td>Ya</td><td>Judul lagu, mis <code>Indonesia Raya</code></td></tr>
+            <tr><td><code>apikey</code></td><td>string</td><td>Ya</td><td>API key kamu</td></tr>
+          </table></div>
+        </div>
         <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
-        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/lirik?q=过头&amp;apikey=API_KEY"</pre></div>
+        <pre><span style="color:#89ddff"># ini yang WORKS — judul polos</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/lirik?q=Indonesia+Raya&amp;apikey=API_KEY"
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/lirik?q=Bondan&amp;apikey=API_KEY"
+
+<span style="color:#89ddff"># ini yang GAGAL — format "Judul Penyanyi"</span>
+curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/lirik?q=Monokrom+Killing&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Yang sudah dicoba &amp; berhasil:</b> <code>Indonesia Raya</code>, <code>Bondan</code>, <code>Bila Cinta</code>, dan <code>Kau Tak Sendiri</code> semua ketemu. Format <code>Judul Penyanyi</code> justru <b>tidak</b> ketemu, padahal pesan error di server menyarankan format itu.</div>
+        <div class="res-note"><b>Kalau 500:</b> judulnya belum ada di database. Cari yang lebih umum atau ejaan yang lebih pendek.</div>
       </div>
 
       <div class="ep-block" id="phonespecs">
@@ -659,7 +689,7 @@ curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&a
   </div>
 </footer>
 
-<script src="/assets/app.js?v=20261001e"></script>
+<script src="/assets/app.js?v=20261001f"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear()</script>
 </body>
 </html>
