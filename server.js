@@ -9,6 +9,7 @@ import express from 'express'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Readable } from 'node:stream'
+import * as downloader from './api/downloader.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PUBLIC_DIR = path.join(__dirname, 'public')
@@ -60,8 +61,73 @@ app.get('/healthz', (_req, res) => {
 })
 
 /* ---------------------------------------------------------
+ * Endpoint native — dijalankan langsung di web server
+ * pakai yt-dlp, tidak lewat backend.
+ * Semua tetap butuh apikey & ikut foramat JSON yang sama.
+ * ------------------------------------------------------- */
+
+/** Bungkus handler jadi route Express dengan timeout */
+function native(pathname, handler) {
+  app.get(pathname, async (req, res) => {
+    const started = Date.now()
+    try {
+      const out = await handler(req, res)
+      if (res.headersSent || out === undefined) return
+      res.json(out)
+      if (process.env.LOG_NATIVE === '1') {
+        console.log(`  \x1b[36m⏱\x1b[0m  ${pathname} → ${Date.now() - started}ms`)
+      }
+    } catch (err) {
+      console.error(`  \x1b[31m✗\x1b[0m  ${pathname}: ${err.message}`)
+      res.status(400).json({ status: false, error: err.message })
+    }
+  })
+}
+
+/** Ambil & validasi parameter wajib */
+function need(req, name) {
+  const v = req.query[name]
+  if (!v || !String(v).trim()) {
+    throw new Error(`Parameter "${name}" wajib diisi.`)
+  }
+  return String(v).trim()
+}
+
+// Pencarian YouTube / YT Music
+native('/api/ytsearch', (req) =>
+  downloader.search(need(req, 'q'), {
+    limit: req.query.limit,
+    type: req.query.type === 'music' ? 'music' : 'video',
+  })
+)
+
+// Metadata video (versi native, tidak lewat backend)
+native('/api/ytinfo', async (req) => {
+  const url = need(req, 'url')
+  const info = await downloader.getInfo(url)
+  return { status: true, ...info }
+})
+
+// Thumbnail YouTube (proxy supaya tidak kena hotlink)
+native('/api/ytthumb', (req) => {
+  const id = need(req, 'id')
+  return {
+    status: true,
+    id,
+    urls: {
+      maxres: downloader.youtubeThumbnail(id, 'maxres'),
+      sd: downloader.youtubeThumbnail(id, 'sddefault'),
+      hq: downloader.youtubeThumbnail(id, 'hqdefault'),
+    },
+  }
+})
+
+// Spotify → cari di YouTube Music (Spotify DRM, jadi di-bypass)
+native('/api/spotify', (req) => downloader.spotifyToYoutube(need(req, 'url')))
+
+/* ---------------------------------------------------------
  * Proxy ke backend API
- * Semua /api/* diteruskan apa adanya (termasuk ?apikey=)
+ * Semua /api/* lain diteruskan apa adanya (termasuk ?apikey=)
  * ------------------------------------------------------- */
 app.all(/^\/api(\/.*)?$/i, async (req, res) => {
   const target = `${UPSTREAM}${req.originalUrl}`
