@@ -6,7 +6,7 @@
 <title>Dokumentasi — HABI API</title>
 <meta name="description" content="Dokumentasi lengkap HABI API: downloader YouTube, TikTok, Instagram, Facebook, dan tools OCR, translate, TTS, screenshot.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text y='72' x='50' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
-<link rel="stylesheet" href="/assets/style.css?v=20261001b">
+<link rel="stylesheet" href="/assets/style.css?v=20261001c">
 <style>
   .doc-layout { display: grid; grid-template-columns: 236px 1fr; gap: 44px; align-items: start; }
   .doc-side { position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto; padding-right: 8px; }
@@ -92,6 +92,13 @@
       <a href="#phonecompare">/api/phonecompare</a>
       <a href="#removebg">/api/removebg</a>
       <a href="#pdfcompress">/api/pdfcompress</a>
+      <h5>Studio 🆕</h5>
+      <a href="#resolve">/api/resolve</a>
+      <a href="#detect">/api/detect</a>
+      <a href="#sticker">/api/sticker</a>
+      <a href="#welcome">/api/welcome</a>
+      <a href="#reply">/api/reply</a>
+      <a href="#reply-variants">/api/reply/variants</a>
       <h5>Lainnya</h5>
       <a href="/pricing">Harga</a>
       <a href="/#faq">FAQ</a>
@@ -523,6 +530,102 @@ curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&a
         <pre>curl -o kecil.pdf "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/pdfcompress?url=https://contoh.com/file.pdf&amp;apikey=API_KEY"</pre></div>
       </div>
 
+      <!-- ══════ STUDIO (self-hosted) ══════ -->
+      <h2 style="margin-top:56px;padding-top:34px;border-top:1px solid var(--border)">🆕 Studio</h2>
+      <p class="desc">Endpoint baru yang dijalankan sepenuhnya di server kami — <code>yt-dlp</code> untuk resolver, <code>@napi-rs/canvas</code> untuk gambar. Semua wajib <code>apikey</code>, sudah termasuk proteksi anti-SSRF dan batas ukuran berkas.</p>
+
+      <div class="ep-block" id="resolve">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/resolve</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Ambil URL media siap pakai dari link TikTok, Facebook, Instagram, X, YouTube, Reddit, dan lain-lain. Mengembalikan <b>JSON</b>, bukan file — cocok kalau bot kamu butuh link untuk dikirim ulang, bukan file video.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>url</code></td><td>string</td><td>Ya</td><td>Link media yang mau diambil</td></tr>
+            <tr><td><code>audio</code></td><td>boolean</td><td>Tidak</td><td><code>true</code> = ambil stream audio saja</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/resolve?url=https://www.tiktok.com/@user/video/ID&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"platform":"tiktok","source":"yt-dlp","title":"...","thumbnail":"...","media":{"video":{"url":"...","ext":"mp4"},"audio":null}}</code></div>
+        <div class="res-note"><b>Catatan:</b> untuk mau file video langsung, pakai <code>/api/tiktok</code> atau <code>/api/facebook</code> yang sudah mengembalikan MP4. Endpoint ini mengembalikan JSON. Jalur-taking: <code>yt-dlp</code> → <code>tikwm</code> (khusus TikTok) → gateway fallback.</div>
+      </div>
+
+      <div class="ep-block" id="detect">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/detect</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Cek platform dari sebuah URL. Cepat, tidak menjalankan <code>yt-dlp</code>.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/detect?url=https://vm.tiktok.com/XXXX&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"platform":"tiktok","url":"..."}</code> — nilai <code>platform</code> bisa: tiktok, facebook, instagram, twitter, youtube, soundcloud, pinterest, reddit, vk, douyin, other.</div>
+      </div>
+
+      <div class="ep-block" id="sticker">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/sticker</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Jadikan foto apa pun jadi stiker WhatsApp 512×512 (WebP), persis seperti bot HABI.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>image</code></td><td>string</td><td>Ya</td><td>URL gambar (https/http) atau data URL</td></tr>
+            <tr><td><code>format</code></td><td>string</td><td>Tidak</td><td><code>webp</code> (default) atau <code>png</code></td></tr>
+            <tr><td><code>padding</code></td><td>number</td><td>Tidak</td><td>Tepi putih dalam piksel. Default 8, maks 96</td></tr>
+            <tr><td><code>radius</code></td><td>number</td><td>Tidak</td><td>Pembulatan sudut. Default 64</td></tr>
+            <tr><td><code>background</code></td><td>string</td><td>Tidak</td><td>Warna tepi, default <code>#ffffff</code></td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o stiker.webp "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/sticker?image=https://contoh.com/foto.jpg&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Output:</b> file WebP 512×512, rasio foto dipertahankan (tidak gepeng).</div>
+      </div>
+
+      <div class="ep-block" id="welcome">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/welcome</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Buat kartu sambutan member baru untuk grup WhatsApp, 1000×460 PNG.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>name</code></td><td>string</td><td>Tidak</td><td>Nama member. Default <code>Member Baru</code></td></tr>
+            <tr><td><code>tag</code></td><td>string</td><td>Tidak</td><td>Tagline, mis <code>@budi</code></td></tr>
+            <tr><td><code>group</code></td><td>string</td><td>Tidak</td><td>Nama grup</td></tr>
+            <tr><td><code>members</code></td><td>string</td><td>Tidak</td><td>Jumlah anggota, mis <code>1.204 anggota</code></td></tr>
+            <tr><td><code>custom</code></td><td>string</td><td>Tidak</td><td>Kalimat tambahan</td></tr>
+            <tr><td><code>accent</code></td><td>string</td><td>Tidak</td><td>green, blue, purple, pink, orange, red, gold, atau hex</td></tr>
+            <tr><td><code>avatar</code></td><td>string</td><td>Tidak</td><td>URL foto. Kalau kosong dipakai inisial nama</td></tr>
+            <tr><td><code>background</code></td><td>string</td><td>Tidak</td><td>URL foto latar (tampil samar 22%)</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o welcome.png "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/welcome?name=Budi+Santoso&amp;group=Komunitas+Hacker+ID&amp;members=1.204+anggota&amp;accent=green&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG 1000×460.</div>
+      </div>
+
+      <div class="ep-block" id="reply">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/reply</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Buat gambar fake balasan chat WhatsApp — reaction bar, bubble pesan, dan kartu kutipan. Ada 5 varian gaya.</p>
+        <div class="params"><h4>Parameter</h4>
+          <div class="table-wrap"><table>
+            <tr><th>Parameter</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td><code>variant</code></td><td>number</td><td>Tidak</td><td>1–5 (lihat <a href="#reply-variants" style="color:var(--brand-2)">daftar varian</a>). Default 1</td></tr>
+            <tr><td><code>text</code></td><td>string</td><td>Tidak</td><td>Isi balasan</td></tr>
+            <tr><td><code>name</code></td><td>string</td><td>Tidak</td><td>Nama pengirim</td></tr>
+            <tr><td><code>target</code></td><td>string</td><td>Tidak</td><td>Teks pesan yang dibalas</td></tr>
+            <tr><td><code>targetName</code></td><td>string</td><td>Tidak</td><td>Nama orang yang dibalas</td></tr>
+            <tr><td><code>time</code></td><td>string</td><td>Tidak</td><td>Jam di bubble. Default <code>09.41</code></td></tr>
+            <tr><td><code>image</code></td><td>string</td><td>Tidak</td><td>URL gambar — dipakai varian 3 &amp; 5</td></tr>
+            <tr><td><code>title</code> / <code>description</code> / <code>url</code></td><td>string</td><td>Tidak</td><td>Isi kartu tautan pada varian 5</td></tr>
+          </table></div>
+        </div>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl -o reply.png "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/reply?variant=5&amp;text=Halo+dari+HABI&amp;target=Apa+kabar&amp;name=HABI+Official&amp;apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Output:</b> file PNG 680 px lebar. Reaction bar digambar sebagai vektor, jadi tajam di ukuran berapa pun dan tidak butuh font emoji.</div>
+      </div>
+
+      <div class="ep-block" id="reply-variants">
+        <div class="ep-head"><span class="method">GET</span><h3>/api/reply/variants</h3><span class="badge free">Gratis</span></div>
+        <p class="desc">Daftar varian yang tersedia untuk <a href="#reply" style="color:var(--brand-2)">/api/reply</a>. Tidak butuh parameter lain.</p>
+        <div class="code"><div class="code-head"><span class="tab on">cURL</span><div class="copy"><button data-copy="#">Salin</button></div></div>
+        <pre>curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/reply/variants?apikey=API_KEY"</pre></div>
+        <div class="res-note"><b>Respons:</b> <code>{"status":true,"total":5,"variants":[{"id":1,"name":"Balasan teks sederhana"}, …]}</code></div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -541,7 +644,7 @@ curl "<span data-cfg="baseUrl">https://api.habi.my.id</span>/api/iqc?text=Halo&a
   </div>
 </footer>
 
-<script src="/assets/app.js?v=20261001b"></script>
+<script src="/assets/app.js?v=20261001c"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear()</script>
 </body>
 </html>
