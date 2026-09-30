@@ -92,7 +92,7 @@ export async function iphoneQuote({
   timebar = true,
   wifi = true,
   avatar = null,
-  clean = true,
+  menu = true,
 } = {}) {
   const { generateIQC } = load('iqc-canvas')
 
@@ -108,11 +108,11 @@ export async function iphoneQuote({
   const out = await generateIQC(String(text).slice(0, 1000), String(time), opts)
   const buf = toBuffer(out)
 
-  // Library selalu menggambar menu Balas/Teruskan/Salin di bawah
-  // gelembung chat. Kalau user tidak memintanya, kita crop bagian
-  // bawah itu agar hasilnya bersih seperti screenshot biasa.
-  if (!clean) return buf
-  return cropReplyMenu(buf)
+  // Menu Balas/Teruskan/Salin adalah bagian natural dari screenshot
+  // chat, jadi default-nya ditampilkan. Kalau user butuh versi bersih,
+  // kirim menu=false.
+  if (!menu) return cropReplyMenu(buf)
+  return buf
 }
 
 /** Potong menu konteks di bagian bawah gambar IQC */
